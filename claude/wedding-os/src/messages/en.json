@@ -1,0 +1,147 @@
+{
+  "nav": {
+    "home": "Home",
+    "ourStory": "Our Story",
+    "details": "Details",
+    "rsvp": "RSVP",
+    "gallery": "Gallery",
+    "registry": "Registry",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "login": "Login",
+    "dashboard": "Dashboard",
+    "guestPortal": "My RSVP"
+  },
+  "home": {
+    "wereGettingMarried": "We're Getting Married!",
+    "saveTheDate": "Save the Date",
+    "daysToGo": "Days to Go",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "rsvpNow": "RSVP Now",
+    "viewDetails": "View Details"
+  },
+  "ourStory": {
+    "title": "Our Story",
+    "subtitle": "The journey that brought us together"
+  },
+  "details": {
+    "title": "Wedding Details",
+    "when": "When",
+    "where": "Where",
+    "schedule": "Schedule",
+    "dressCode": "Dress Code",
+    "dressCodeText": "Smart casual. Light colors preferred."
+  },
+  "rsvp": {
+    "title": "RSVP",
+    "subtitle": "Please let us know if you can make it",
+    "inviteCode": "Invite Code",
+    "enterCode": "Enter your invite code",
+    "continue": "Continue",
+    "invalidCode": "Invalid invite code",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "willYouAttend": "Will you attend?",
+    "yes": "Happily Accepting",
+    "no": "Regretfully Declining",
+    "mealChoice": "Meal Preference",
+    "chicken": "Chicken",
+    "fish": "Fish",
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "allergies": "Allergies or Dietary Requirements",
+    "plusOne": "Plus One Name",
+    "plusOneMeal": "Plus One Meal",
+    "songRequest": "Song Request",
+    "songPlaceholder": "What song will get you on the dance floor?",
+    "submit": "Submit RSVP",
+    "success": "Thank you! Your RSVP has been recorded.",
+    "error": "Something went wrong. Please try again."
+  },
+  "gallery": {
+    "title": "Gallery",
+    "subtitle": "Moments we've shared"
+  },
+  "registry": {
+    "title": "Registry",
+    "subtitle": "Your presence is the greatest gift"
+  },
+  "faq": {
+    "title": "FAQ",
+    "subtitle": "Frequently Asked Questions"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Have a question? Reach out!",
+    "name": "Your Name",
+    "email": "Your Email",
+    "message": "Message",
+    "send": "Send Message",
+    "success": "Message sent successfully!",
+    "error": "Failed to send message. Please try again."
+  },
+  "auth": {
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In",
+    "magicLink": "Send Magic Link",
+    "or": "or",
+    "checkEmail": "Check your email for a login link",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "guests": "Guests",
+    "seating": "Seating",
+    "budget": "Budget",
+    "vendors": "Vendors",
+    "gallery": "Gallery",
+    "messages": "Messages",
+    "settings": "Settings",
+    "totalGuests": "Total Guests",
+    "accepted": "Accepted",
+    "declined": "Declined",
+    "pending": "Pending",
+    "totalBudget": "Total Budget",
+    "totalPaid": "Total Paid",
+    "addGuest": "Add Guest",
+    "importCsv": "Import CSV",
+    "exportCsv": "Export CSV",
+    "search": "Search...",
+    "addTable": "Add Table",
+    "autoSeat": "Auto-Seat",
+    "addBudgetItem": "Add Item",
+    "addVendor": "Add Vendor",
+    "upload": "Upload",
+    "approve": "Approve",
+    "reject": "Reject",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "guest": {
+    "title": "Guest Portal",
+    "yourRsvp": "Your RSVP",
+    "status": "Status",
+    "updateRsvp": "Update RSVP",
+    "eventInfo": "Event Information"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "language": "Language"
+  },
+  "footer": {
+    "madeWithLove": "Made with love"
+  }
+}

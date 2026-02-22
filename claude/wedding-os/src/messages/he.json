@@ -1,0 +1,147 @@
+{
+  "nav": {
+    "home": "בית",
+    "ourStory": "הסיפור שלנו",
+    "details": "פרטים",
+    "rsvp": "אישור הגעה",
+    "gallery": "גלריה",
+    "registry": "רשימת מתנות",
+    "faq": "שאלות נפוצות",
+    "contact": "צור קשר",
+    "login": "התחברות",
+    "dashboard": "לוח בקרה",
+    "guestPortal": "האישור שלי"
+  },
+  "home": {
+    "wereGettingMarried": "אנחנו מתחתנים!",
+    "saveTheDate": "שמרו את התאריך",
+    "daysToGo": "ימים",
+    "hours": "שעות",
+    "minutes": "דקות",
+    "seconds": "שניות",
+    "rsvpNow": "אשרו הגעה",
+    "viewDetails": "לפרטים נוספים"
+  },
+  "ourStory": {
+    "title": "הסיפור שלנו",
+    "subtitle": "המסע שהביא אותנו לכאן"
+  },
+  "details": {
+    "title": "פרטי החתונה",
+    "when": "מתי",
+    "where": "איפה",
+    "schedule": "לוח זמנים",
+    "dressCode": "קוד לבוש",
+    "dressCodeText": "אלגנטי-קז'ואל. צבעים בהירים מועדפים."
+  },
+  "rsvp": {
+    "title": "אישור הגעה",
+    "subtitle": "נא לעדכן אותנו אם תוכלו להגיע",
+    "inviteCode": "קוד הזמנה",
+    "enterCode": "הכניסו את קוד ההזמנה",
+    "continue": "המשך",
+    "invalidCode": "קוד הזמנה לא תקין",
+    "firstName": "שם פרטי",
+    "lastName": "שם משפחה",
+    "email": "אימייל",
+    "phone": "טלפון",
+    "willYouAttend": "האם תגיעו?",
+    "yes": "בשמחה רבה, מאשרים הגעה",
+    "no": "לצערנו, לא נוכל להגיע",
+    "mealChoice": "העדפת מנה",
+    "chicken": "עוף",
+    "fish": "דג",
+    "vegetarian": "צמחוני",
+    "vegan": "טבעוני",
+    "allergies": "אלרגיות או דרישות תזונתיות",
+    "plusOne": "שם המלווה",
+    "plusOneMeal": "מנה למלווה",
+    "songRequest": "בקשת שיר",
+    "songPlaceholder": "איזה שיר יעלה אתכם לרחבה?",
+    "submit": "שליחת אישור",
+    "success": "תודה! האישור שלכם נרשם בהצלחה.",
+    "error": "משהו השתבש. נא לנסות שוב."
+  },
+  "gallery": {
+    "title": "גלריה",
+    "subtitle": "רגעים שחלקנו יחד"
+  },
+  "registry": {
+    "title": "רשימת מתנות",
+    "subtitle": "הנוכחות שלכם היא המתנה הגדולה ביותר"
+  },
+  "faq": {
+    "title": "שאלות נפוצות",
+    "subtitle": "שאלות נפוצות"
+  },
+  "contact": {
+    "title": "צור קשר",
+    "subtitle": "יש שאלה? דברו איתנו!",
+    "name": "שם",
+    "email": "אימייל",
+    "message": "הודעה",
+    "send": "שליחה",
+    "success": "ההודעה נשלחה בהצלחה!",
+    "error": "שליחת ההודעה נכשלה. נא לנסות שוב."
+  },
+  "auth": {
+    "login": "התחברות",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "signIn": "התחברות",
+    "magicLink": "שלח קישור קסם",
+    "or": "או",
+    "checkEmail": "בדקו את האימייל שלכם לקישור התחברות",
+    "invalidCredentials": "אימייל או סיסמה לא תקינים"
+  },
+  "dashboard": {
+    "title": "לוח בקרה",
+    "overview": "סקירה",
+    "guests": "אורחים",
+    "seating": "הושבה",
+    "budget": "תקציב",
+    "vendors": "ספקים",
+    "gallery": "גלריה",
+    "messages": "הודעות",
+    "settings": "הגדרות",
+    "totalGuests": "סה\"כ אורחים",
+    "accepted": "אישרו",
+    "declined": "סירבו",
+    "pending": "ממתינים",
+    "totalBudget": "תקציב כולל",
+    "totalPaid": "שולם",
+    "addGuest": "הוסף אורח",
+    "importCsv": "ייבוא CSV",
+    "exportCsv": "ייצוא CSV",
+    "search": "חיפוש...",
+    "addTable": "הוסף שולחן",
+    "autoSeat": "הושבה אוטומטית",
+    "addBudgetItem": "הוסף פריט",
+    "addVendor": "הוסף ספק",
+    "upload": "העלאה",
+    "approve": "אישור",
+    "reject": "דחייה",
+    "save": "שמירה",
+    "cancel": "ביטול",
+    "delete": "מחיקה",
+    "edit": "עריכה"
+  },
+  "guest": {
+    "title": "פורטל אורח",
+    "yourRsvp": "האישור שלך",
+    "status": "סטטוס",
+    "updateRsvp": "עדכון אישור",
+    "eventInfo": "מידע על האירוע"
+  },
+  "common": {
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "back": "חזרה",
+    "next": "הבא",
+    "close": "סגור",
+    "language": "שפה"
+  },
+  "footer": {
+    "madeWithLove": "נבנה באהבה"
+  }
+}

@@ -9,7 +9,7 @@ export async function GET() {
   }
 
   const guests = await prisma.guest.findMany({
-    where: { weddingId: session.user.weddingId },
+    where: { weddingId: session.user.weddingId! },
     include: { table: true },
     orderBy: { lastName: 'asc' },
   });

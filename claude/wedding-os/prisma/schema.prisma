@@ -27,16 +27,17 @@ enum Channel {
 }
 
 model Wedding {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-  partner1Name String
-  partner2Name String
-  date         DateTime?
-  venue        String?
-  locale       String   @default("he")
-  theme        String   @default("default")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  slug               String   @unique
+  partner1Name       String
+  partner2Name       String
+  date               DateTime?
+  venue              String?
+  locale             String   @default("he")
+  theme              String   @default("default")
+  onboardingComplete Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   users            User[]
   inviteCodes      InviteCode[]
@@ -59,8 +60,8 @@ model User {
   passwordHash  String?
   emailVerified DateTime?
   image         String?
-  weddingId     String
-  wedding       Wedding   @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  weddingId     String?
+  wedding       Wedding?  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
   createdAt     DateTime  @default(now())
 
   accounts Account[]

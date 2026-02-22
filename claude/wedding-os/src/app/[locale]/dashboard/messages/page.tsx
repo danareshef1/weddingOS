@@ -13,7 +13,7 @@ export default async function MessagesPage({
   if (!session?.user) redirect(`/${locale}/auth/login`);
 
   const templates = await prisma.messageTemplate.findMany({
-    where: { weddingId: session.user.weddingId },
+    where: { weddingId: session.user.weddingId! },
     orderBy: { createdAt: 'desc' },
   });
 

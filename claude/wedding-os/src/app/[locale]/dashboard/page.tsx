@@ -13,7 +13,7 @@ export default async function DashboardPage({
   const session = await auth();
   if (!session?.user) redirect(`/${locale}/auth/login`);
 
-  const weddingId = session.user.weddingId;
+  const weddingId = session.user.weddingId!;
 
   const [guests, budgetItems] = await Promise.all([
     prisma.guest.findMany({ where: { weddingId } }),

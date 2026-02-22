@@ -2,7 +2,12 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from './prisma';
+import { createHash } from 'crypto';
 import type { Role } from '@prisma/client';
+
+function hashPassword(password: string): string {
+  return createHash('sha256').update(password).digest('hex');
+}
 
 declare module 'next-auth' {
   interface Session {
@@ -11,13 +16,15 @@ declare module 'next-auth' {
       email: string;
       name?: string | null;
       role: Role;
-      weddingId: string;
+      weddingId: string | null;
+      onboardingComplete: boolean;
     };
   }
 
   interface User {
     role: Role;
-    weddingId: string;
+    weddingId: string | null;
+    onboardingComplete: boolean;
   }
 }
 
@@ -40,15 +47,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
+          include: { wedding: true },
         });
 
         if (!user || !user.passwordHash) return null;
 
-        // In production, use bcrypt.compare
-        // For demo: accept "demo1234" for seeded users
+        // Check hashed password, or accept "demo1234" for seeded users
+        const hashedInput = hashPassword(credentials.password as string);
         const isValid =
           credentials.password === 'demo1234' ||
-          user.passwordHash === credentials.password;
+          user.passwordHash === hashedInput;
 
         if (!isValid) return null;
 
@@ -58,15 +66,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: user.name,
           role: user.role,
           weddingId: user.weddingId,
+          onboardingComplete: user.wedding?.onboardingComplete ?? false,
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.role = user.role;
         token.weddingId = user.weddingId;
+        token.onboardingComplete = user.onboardingComplete;
+      }
+      // When update() is called from the client with data, apply it directly
+      if (trigger === 'update' && session) {
+        if (session.weddingId !== undefined) token.weddingId = session.weddingId;
+        if (session.onboardingComplete !== undefined) token.onboardingComplete = session.onboardingComplete;
       }
       return token;
     },
@@ -74,7 +89,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.sub!;
         session.user.role = token.role as Role;
-        session.user.weddingId = token.weddingId as string;
+        session.user.weddingId = token.weddingId as string | null;
+        session.user.onboardingComplete = token.onboardingComplete as boolean;
       }
       return session;
     },

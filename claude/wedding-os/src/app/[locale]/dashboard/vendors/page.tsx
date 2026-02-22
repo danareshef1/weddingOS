@@ -12,7 +12,7 @@ export default async function VendorsPage({
   if (!session?.user) redirect(`/${locale}/auth/login`);
 
   const vendors = await prisma.vendor.findMany({
-    where: { weddingId: session.user.weddingId },
+    where: { weddingId: session.user.weddingId! },
     orderBy: { category: 'asc' },
   });
 

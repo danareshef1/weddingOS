@@ -15,7 +15,7 @@ export default async function GuestInfoPage({
   if (!session?.user) redirect(`/${locale}/auth/login`);
 
   const wedding = await prisma.wedding.findUnique({
-    where: { id: session.user.weddingId },
+    where: { id: session.user.weddingId! },
     include: {
       scheduleItems: { orderBy: { order: 'asc' } },
     },

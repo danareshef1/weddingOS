@@ -15,7 +15,7 @@ export default async function GuestPortalPage({
 
   const guest = await prisma.guest.findFirst({
     where: {
-      weddingId: session.user.weddingId,
+      weddingId: session.user.weddingId!,
       email: session.user.email,
     },
   });

@@ -86,13 +86,32 @@
   },
   "auth": {
     "login": "התחברות",
+    "register": "יצירת חשבון",
+    "name": "שם מלא",
     "email": "אימייל",
     "password": "סיסמה",
     "signIn": "התחברות",
+    "createAccount": "יצירת חשבון",
+    "noAccount": "אין לך חשבון?",
+    "alreadyHaveAccount": "כבר יש לך חשבון?",
+    "registrationFailed": "ההרשמה נכשלה. נא לנסות שוב.",
     "magicLink": "שלח קישור קסם",
     "or": "או",
     "checkEmail": "בדקו את האימייל שלכם לקישור התחברות",
     "invalidCredentials": "אימייל או סיסמה לא תקינים"
+  },
+  "onboarding": {
+    "title": "!ברוכים הבאים ל-WeddingOS",
+    "subtitle": "ספרו לנו על היום הגדול שלכם כדי להתחיל",
+    "brideName": "שם הכלה",
+    "brideNamePlaceholder": "הכניסו את שם הכלה",
+    "groomName": "שם החתן",
+    "groomNamePlaceholder": "הכניסו את שם החתן",
+    "venue": "אולם/מקום",
+    "venuePlaceholder": "הכניסו את שם האולם",
+    "weddingDate": "תאריך החתונה",
+    "letsGo": "!יאללה, מתחילים",
+    "error": "משהו השתבש. נא לנסות שוב."
   },
   "dashboard": {
     "title": "לוח בקרה",

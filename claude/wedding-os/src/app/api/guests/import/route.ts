@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
       if (row.firstname && row.lastname) {
         guests.push({
-          weddingId: session.user.weddingId,
+          weddingId: session.user.weddingId!,
           firstName: row.firstname,
           lastName: row.lastname,
           email: row.email || null,

@@ -8,7 +8,7 @@ export async function POST() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const weddingId = session.user.weddingId;
+  const weddingId = session.user.weddingId!;
 
   try {
     const [guests, tables] = await Promise.all([

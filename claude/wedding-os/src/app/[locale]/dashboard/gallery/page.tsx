@@ -17,7 +17,7 @@ export default async function DashboardGalleryPage({
   if (!session?.user) redirect(`/${locale}/auth/login`);
 
   const images = await prisma.galleryImage.findMany({
-    where: { weddingId: session.user.weddingId },
+    where: { weddingId: session.user.weddingId! },
     orderBy: { createdAt: 'desc' },
   });
 

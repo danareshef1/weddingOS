@@ -14,7 +14,7 @@ export default async function BudgetPage({
   if (!session?.user) redirect(`/${locale}/auth/login`);
 
   const items = await prisma.budgetItem.findMany({
-    where: { weddingId: session.user.weddingId },
+    where: { weddingId: session.user.weddingId! },
     orderBy: { category: 'asc' },
   });
 

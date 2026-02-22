@@ -86,13 +86,32 @@
   },
   "auth": {
     "login": "Login",
+    "register": "Create Account",
+    "name": "Full Name",
     "email": "Email",
     "password": "Password",
     "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "noAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "registrationFailed": "Registration failed. Please try again.",
     "magicLink": "Send Magic Link",
     "or": "or",
     "checkEmail": "Check your email for a login link",
     "invalidCredentials": "Invalid email or password"
+  },
+  "onboarding": {
+    "title": "Welcome to WeddingOS!",
+    "subtitle": "Tell us about your big day to get started",
+    "brideName": "Bride's Name",
+    "brideNamePlaceholder": "Enter bride's name",
+    "groomName": "Groom's Name",
+    "groomNamePlaceholder": "Enter groom's name",
+    "venue": "Venue (Hall)",
+    "venuePlaceholder": "Enter venue name",
+    "weddingDate": "Wedding Date",
+    "letsGo": "Let's Go!",
+    "error": "Something went wrong. Please try again."
   },
   "dashboard": {
     "title": "Dashboard",

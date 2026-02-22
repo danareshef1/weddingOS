@@ -1,5 +1,22 @@
 import { z } from 'zod';
 
+export const registerSchema = z.object({
+  email: z.string().email('Invalid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  name: z.string().min(1, 'Name is required'),
+});
+
+export type RegisterInput = z.infer<typeof registerSchema>;
+
+export const onboardingSchema = z.object({
+  brideName: z.string().min(1, 'Bride name is required'),
+  groomName: z.string().min(1, 'Groom name is required'),
+  venue: z.string().min(1, 'Venue is required'),
+  weddingDate: z.string().min(1, 'Wedding date is required'),
+});
+
+export type OnboardingInput = z.infer<typeof onboardingSchema>;
+
 export const rsvpSchema = z.object({
   inviteCode: z.string().min(1, 'Invite code is required'),
   firstName: z.string().min(1, 'First name is required'),

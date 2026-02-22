@@ -12,7 +12,7 @@ export default async function SeatingPage({
   const session = await auth();
   if (!session?.user) redirect(`/${locale}/auth/login`);
 
-  const weddingId = session.user.weddingId;
+  const weddingId = session.user.weddingId!;
 
   const [tables, unseatedGuests] = await Promise.all([
     prisma.table.findMany({

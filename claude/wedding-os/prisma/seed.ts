@@ -29,6 +29,7 @@ async function main() {
       venue: 'Garden Venue, Tel Aviv',
       locale: 'he',
       theme: 'default',
+      onboardingComplete: true,
     },
   });
 

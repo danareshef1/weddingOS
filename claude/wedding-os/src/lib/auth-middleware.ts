@@ -15,10 +15,32 @@ export async function requireAuth(allowedRoles?: Role[]) {
   return session;
 }
 
+export async function requireOnboarded() {
+  const session = await requireAuth();
+
+  if (!session.user.weddingId || !session.user.onboardingComplete) {
+    throw new Error('Onboarding not complete');
+  }
+
+  return session as typeof session & { user: typeof session.user & { weddingId: string } };
+}
+
 export async function requireCouple() {
-  return requireAuth([Role.COUPLE, Role.ADMIN]);
+  const session = await requireOnboarded();
+
+  if (!['COUPLE', 'ADMIN'].includes(session.user.role)) {
+    throw new Error('Forbidden');
+  }
+
+  return session;
 }
 
 export async function requireGuest() {
-  return requireAuth([Role.GUEST, Role.COUPLE, Role.ADMIN]);
+  const session = await requireOnboarded();
+
+  if (!['GUEST', 'COUPLE', 'ADMIN'].includes(session.user.role)) {
+    throw new Error('Forbidden');
+  }
+
+  return session;
 }

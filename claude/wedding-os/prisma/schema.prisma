@@ -161,18 +161,20 @@ model Table {
 }
 
 model BudgetItem {
-  id          String   @id @default(cuid())
-  weddingId   String
-  wedding     Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
-  category    String
-  vendor      String?
-  description String?
-  estimated   Float    @default(0)
-  actual      Float    @default(0)
-  paid        Float    @default(0)
-  dueDate     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  weddingId     String
+  wedding       Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  category      String
+  vendor        String?
+  description   String?
+  estimated     Float    @default(0)
+  actual        Float    @default(0)
+  paid          Float    @default(0)
+  deposit       Float    @default(0)
+  paymentMethod String?
+  dueDate       DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([weddingId])
 }
@@ -187,6 +189,8 @@ model Vendor {
   email       String?
   notes       String?
   contractUrl String?
+  status      String  @default("NOT_STARTED")
+  isDefault   Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

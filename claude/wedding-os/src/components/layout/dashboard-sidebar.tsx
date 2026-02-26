@@ -14,7 +14,9 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -86,6 +88,20 @@ export function DashboardSidebar() {
           );
         })}
       </nav>
+
+      <div className="border-t p-2">
+        <button
+          onClick={() => signOut({ callbackUrl: `/${locale}` })}
+          className={cn(
+            'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent text-muted-foreground hover:text-foreground',
+            collapsed && 'justify-center px-2'
+          )}
+          title={collapsed ? t('logout') : undefined}
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          {!collapsed && <span>{t('logout')}</span>}
+        </button>
+      </div>
     </aside>
   );
 }

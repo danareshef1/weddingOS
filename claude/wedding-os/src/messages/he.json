@@ -10,6 +10,7 @@
     "contact": "צור קשר",
     "login": "התחברות",
     "dashboard": "לוח בקרה",
+    "logout": "התנתקות",
     "guestPortal": "האישור שלי"
   },
   "home": {
@@ -160,7 +161,26 @@
     "eventDetails": "פרטי אירוע",
     "notes": "הערות",
     "guestAdded": "!האורח נוסף בהצלחה",
-    "addGuestError": "הוספת האורח נכשלה. נא לנסות שוב."
+    "addGuestError": "הוספת האורח נכשלה. נא לנסות שוב.",
+    "logout": "התנתקות",
+    "vendorName": "שם הספק",
+    "vendorCategory": "קטגוריה",
+    "vendorStatus": "סטטוס",
+    "notStarted": "טרם החל",
+    "contacted": "יצרנו קשר",
+    "booked": "הוזמן",
+    "vendorAdded": "!הספק נוסף בהצלחה",
+    "addVendorError": "הוספת הספק נכשלה. נא לנסות שוב.",
+    "deposit": "מקדמה",
+    "paymentMethod": "אמצעי תשלום",
+    "bankTransfer": "העברה בנקאית",
+    "cash": "מזומן",
+    "credit": "כרטיס אשראי",
+    "checks": "צ'קים",
+    "installments": "תשלומים",
+    "budgetItemAdded": "!פריט התקציב נוסף בהצלחה",
+    "addBudgetError": "הוספת פריט התקציב נכשלה. נא לנסות שוב.",
+    "totalDeposits": "סה\"כ מקדמות"
   },
   "guest": {
     "title": "פורטל אורח",

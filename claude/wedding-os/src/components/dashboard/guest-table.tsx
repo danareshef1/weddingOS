@@ -25,7 +25,7 @@ export function GuestTable({ guests }: { guests: GuestWithTable[] }) {
     (g) =>
       g.firstName.toLowerCase().includes(search.toLowerCase()) ||
       g.lastName.toLowerCase().includes(search.toLowerCase()) ||
-      g.email?.toLowerCase().includes(search.toLowerCase()) ||
+      g.phone?.toLowerCase().includes(search.toLowerCase()) ||
       g.group?.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -46,7 +46,7 @@ export function GuestTable({ guests }: { guests: GuestWithTable[] }) {
           <thead>
             <tr className="border-b bg-muted/50">
               <th className="px-4 py-3 text-start font-medium">Name</th>
-              <th className="px-4 py-3 text-start font-medium">Email</th>
+              <th className="px-4 py-3 text-start font-medium">Phone</th>
               <th className="px-4 py-3 text-start font-medium">Group</th>
               <th className="px-4 py-3 text-start font-medium">RSVP</th>
               <th className="px-4 py-3 text-start font-medium">Meal</th>
@@ -63,7 +63,7 @@ export function GuestTable({ guests }: { guests: GuestWithTable[] }) {
                     <span className="block text-xs text-muted-foreground">+1: {guest.plusOneName}</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{guest.email || '-'}</td>
+                <td className="px-4 py-3 text-muted-foreground">{guest.phone || '-'}</td>
                 <td className="px-4 py-3">
                   {guest.group && <Badge variant="outline">{guest.group}</Badge>}
                 </td>

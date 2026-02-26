@@ -46,3 +46,49 @@ export async function deleteVendor(id: string) {
 
   revalidatePath('/dashboard/vendors');
 }
+
+const DEFAULT_VENDOR_CATEGORIES = [
+  'Venue',
+  'Catering',
+  'Photography',
+  'Videography',
+  'DJ',
+  'Makeup',
+  'Hair',
+  'Flowers',
+  'Dress',
+  'Suit',
+  'Invitations',
+  'Transportation',
+  'Cake',
+];
+
+export async function initializeDefaultVendors(weddingId: string) {
+  await requireCouple();
+
+  const existing = await prisma.vendor.count({ where: { weddingId } });
+  if (existing > 0) return;
+
+  await prisma.vendor.createMany({
+    data: DEFAULT_VENDOR_CATEGORIES.map((category) => ({
+      weddingId,
+      name: category,
+      category,
+      status: 'NOT_STARTED',
+      isDefault: true,
+    })),
+  });
+
+  revalidatePath('/dashboard/vendors');
+}
+
+export async function updateVendorStatus(id: string, status: string) {
+  const session = await requireCouple();
+
+  await prisma.vendor.updateMany({
+    where: { id, weddingId: session.user.weddingId },
+    data: { status },
+  });
+
+  revalidatePath('/dashboard/vendors');
+}

@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Globe, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Globe, LayoutDashboard, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -58,12 +58,22 @@ export function Navbar() {
             </Button>
           </Link>
           {session ? (
-            <Link href={`/${locale}/dashboard`}>
-              <Button variant="outline" size="sm">
-                <LayoutDashboard className="me-2 h-4 w-4" />
-                {t('dashboard')}
+            <>
+              <Link href={`/${locale}/dashboard`}>
+                <Button variant="outline" size="sm">
+                  <LayoutDashboard className="me-2 h-4 w-4" />
+                  {t('dashboard')}
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut({ callbackUrl: `/${locale}` })}
+              >
+                <LogOut className="me-2 h-4 w-4" />
+                {t('logout')}
               </Button>
-            </Link>
+            </>
           ) : (
             <Link href={`/${locale}/auth/login`}>
               <Button variant="outline" size="sm">
@@ -115,12 +125,25 @@ export function Navbar() {
                   </Button>
                 </Link>
                 {session ? (
-                  <Link href={`/${locale}/dashboard`} onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" size="sm">
-                      <LayoutDashboard className="me-2 h-4 w-4" />
-                      {t('dashboard')}
+                  <>
+                    <Link href={`/${locale}/dashboard`} onClick={() => setMobileOpen(false)}>
+                      <Button variant="outline" size="sm">
+                        <LayoutDashboard className="me-2 h-4 w-4" />
+                        {t('dashboard')}
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        signOut({ callbackUrl: `/${locale}` });
+                      }}
+                    >
+                      <LogOut className="me-2 h-4 w-4" />
+                      {t('logout')}
                     </Button>
-                  </Link>
+                  </>
                 ) : (
                   <Link href={`/${locale}/auth/login`} onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" size="sm">

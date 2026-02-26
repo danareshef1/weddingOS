@@ -56,6 +56,8 @@ export const budgetItemSchema = z.object({
   estimated: z.number().min(0),
   actual: z.number().min(0).optional(),
   paid: z.number().min(0).optional(),
+  deposit: z.number().min(0).optional(),
+  paymentMethod: z.enum(['BANK_TRANSFER', 'CASH', 'CREDIT', 'CHECKS', 'INSTALLMENTS']).optional(),
   dueDate: z.string().optional(),
 });
 
@@ -68,6 +70,7 @@ export const vendorSchema = z.object({
   email: z.string().email().optional().or(z.literal('')),
   notes: z.string().optional(),
   contractUrl: z.string().url().optional().or(z.literal('')),
+  status: z.enum(['NOT_STARTED', 'CONTACTED', 'BOOKED']).optional(),
 });
 
 export type VendorInput = z.infer<typeof vendorSchema>;

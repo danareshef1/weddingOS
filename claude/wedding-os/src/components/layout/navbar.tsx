@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X, Globe, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -13,6 +14,7 @@ export function Navbar() {
   const t = useTranslations('nav');
   const params = useParams();
   const pathname = usePathname();
+  const { data: session } = useSession();
   const locale = params.locale as string;
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -55,11 +57,20 @@ export function Navbar() {
               <Globe className="h-4 w-4" />
             </Button>
           </Link>
-          <Link href={`/${locale}/auth/login`}>
-            <Button variant="outline" size="sm">
-              {t('login')}
-            </Button>
-          </Link>
+          {session ? (
+            <Link href={`/${locale}/dashboard`}>
+              <Button variant="outline" size="sm">
+                <LayoutDashboard className="me-2 h-4 w-4" />
+                {t('dashboard')}
+              </Button>
+            </Link>
+          ) : (
+            <Link href={`/${locale}/auth/login`}>
+              <Button variant="outline" size="sm">
+                {t('login')}
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -103,11 +114,20 @@ export function Navbar() {
                     {otherLocale === 'he' ? 'עברית' : 'English'}
                   </Button>
                 </Link>
-                <Link href={`/${locale}/auth/login`} onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" size="sm">
-                    {t('login')}
-                  </Button>
-                </Link>
+                {session ? (
+                  <Link href={`/${locale}/dashboard`} onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" size="sm">
+                      <LayoutDashboard className="me-2 h-4 w-4" />
+                      {t('dashboard')}
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href={`/${locale}/auth/login`} onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" size="sm">
+                      {t('login')}
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </motion.div>

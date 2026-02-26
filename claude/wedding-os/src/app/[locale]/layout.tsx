@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { locales, type Locale } from '@/lib/i18n';
 import { Providers } from '@/components/providers';
+import { PublicShell } from '@/components/layout/public-shell';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -33,7 +34,7 @@ export default async function LocaleLayout({
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
         <Providers>
           <NextIntlClientProvider messages={messages}>
-            {children}
+            <PublicShell>{children}</PublicShell>
           </NextIntlClientProvider>
         </Providers>
       </body>

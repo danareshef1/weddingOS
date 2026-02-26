@@ -1,8 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 
@@ -24,9 +22,7 @@ export default async function GuestInfoPage({
   if (!wedding) redirect(`/${locale}`);
 
   return (
-    <>
-      <Navbar />
-      <main className="container mx-auto max-w-2xl px-4 py-16">
+    <main className="container mx-auto max-w-2xl px-4 py-16">
         <h1 className="mb-8 text-center font-serif text-3xl font-bold">Event Information</h1>
 
         <div className="space-y-6">
@@ -91,8 +87,6 @@ export default async function GuestInfoPage({
             </Card>
           )}
         </div>
-      </main>
-      <Footer />
-    </>
+    </main>
   );
 }

@@ -1,6 +1,4 @@
 import { prisma } from '@/lib/prisma';
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 export default async function FaqPage({
@@ -20,9 +18,7 @@ export default async function FaqPage({
     : [];
 
   return (
-    <>
-      <Navbar />
-      <main className="container mx-auto px-4 py-16">
+    <main className="container mx-auto px-4 py-16">
         <div className="mb-16 text-center">
           <h1 className="font-serif text-4xl font-bold sm:text-5xl">FAQ</h1>
           <p className="mt-4 text-lg text-muted-foreground">Frequently Asked Questions</p>
@@ -42,8 +38,6 @@ export default async function FaqPage({
             ))}
           </Accordion>
         </div>
-      </main>
-      <Footer />
-    </>
+    </main>
   );
 }

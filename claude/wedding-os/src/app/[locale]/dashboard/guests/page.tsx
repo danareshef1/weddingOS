@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { GuestTable } from '@/components/dashboard/guest-table';
 import { CsvImport } from '@/components/dashboard/csv-import';
+import { AddGuestDialog } from '@/components/dashboard/add-guest-dialog';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 
@@ -25,6 +26,7 @@ export default async function GuestsPage({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-serif text-3xl font-bold">Guests</h1>
         <div className="flex gap-2">
+          <AddGuestDialog />
           <CsvImport />
           <Button variant="outline" size="sm" asChild>
             <a href="/api/guests/export">

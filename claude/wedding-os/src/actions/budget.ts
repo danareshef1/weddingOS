@@ -15,6 +15,8 @@ export async function createBudgetItem(data: BudgetItemInput) {
       ...parsed,
       actual: parsed.actual || 0,
       paid: parsed.paid || 0,
+      deposit: parsed.deposit || 0,
+      paymentMethod: parsed.paymentMethod || null,
       dueDate: parsed.dueDate ? new Date(parsed.dueDate) : null,
     },
   });

@@ -161,34 +161,40 @@ model Table {
 }
 
 model BudgetItem {
-  id          String   @id @default(cuid())
-  weddingId   String
-  wedding     Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
-  category    String
-  vendor      String?
-  description String?
-  estimated   Float    @default(0)
-  actual      Float    @default(0)
-  paid        Float    @default(0)
-  dueDate     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  weddingId     String
+  wedding       Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  category      String
+  vendor        String?
+  description   String?
+  estimated     Float    @default(0)
+  actual        Float    @default(0)
+  paid          Float    @default(0)
+  deposit       Float    @default(0)
+  paymentMethod String?
+  dueDate       DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([weddingId])
 }
 
 model Vendor {
-  id          String  @id @default(cuid())
-  weddingId   String
-  wedding     Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
-  name        String
-  category    String
-  phone       String?
-  email       String?
-  notes       String?
-  contractUrl String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String    @id @default(cuid())
+  weddingId        String
+  wedding          Wedding   @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name             String
+  category         String
+  phone            String?
+  email            String?
+  notes            String?
+  status           String    @default("NOT_STARTED")
+  isDefault        Boolean   @default(false)
+  amountPaid       Float     @default(0)
+  remainingBalance Float     @default(0)
+  paymentDate      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([weddingId])
 }

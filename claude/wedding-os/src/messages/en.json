@@ -10,6 +10,7 @@
     "contact": "Contact",
     "login": "Login",
     "dashboard": "Dashboard",
+    "logout": "Logout",
     "guestPortal": "My RSVP"
   },
   "home": {
@@ -20,7 +21,8 @@
     "minutes": "Minutes",
     "seconds": "Seconds",
     "rsvpNow": "RSVP Now",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "enterDashboard": "Enter Dashboard"
   },
   "ourStory": {
     "title": "Our Story",
@@ -160,7 +162,29 @@
     "eventDetails": "Event Details",
     "notes": "Notes",
     "guestAdded": "Guest added successfully!",
-    "addGuestError": "Failed to add guest. Please try again."
+    "addGuestError": "Failed to add guest. Please try again.",
+    "logout": "Logout",
+    "vendorName": "Vendor Name",
+    "vendorCategory": "Category",
+    "vendorStatus": "Status",
+    "notStarted": "Not Started",
+    "contacted": "Contacted",
+    "booked": "Booked",
+    "vendorAdded": "Vendor added successfully!",
+    "addVendorError": "Failed to add vendor. Please try again.",
+    "deposit": "Deposit",
+    "paymentMethod": "Payment Method",
+    "bankTransfer": "Bank Transfer",
+    "cash": "Cash",
+    "credit": "Credit Card",
+    "checks": "Checks",
+    "installments": "Installments",
+    "budgetItemAdded": "Budget item added successfully!",
+    "addBudgetError": "Failed to add budget item. Please try again.",
+    "totalDeposits": "Total Deposits",
+    "amountPaid": "Amount Paid",
+    "remainingBalance": "Remaining",
+    "paymentDate": "Payment Date"
   },
   "guest": {
     "title": "Guest Portal",

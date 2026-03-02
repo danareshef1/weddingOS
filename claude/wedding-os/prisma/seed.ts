@@ -62,16 +62,16 @@ async function main() {
 
   // Create guests
   const guestData = [
-    { firstName: 'Sarah', lastName: 'Cohen', group: 'Family', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Chicken', tableId: tables[0].id },
-    { firstName: 'David', lastName: 'Levy', group: 'Family', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Fish', tableId: tables[0].id },
-    { firstName: 'Rachel', lastName: 'Green', group: 'Friends', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Vegetarian', tableId: tables[1].id },
-    { firstName: 'Michael', lastName: 'Ross', group: 'Friends', rsvpStatus: RsvpStatus.PENDING, tableId: tables[1].id },
-    { firstName: 'Yael', lastName: 'Shapira', group: 'Work', rsvpStatus: RsvpStatus.DECLINED },
-    { firstName: 'Avi', lastName: 'Goldstein', group: 'Family', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Chicken', plusOneName: 'Miriam Goldstein', tableId: tables[2].id },
-    { firstName: 'Noa', lastName: 'Ben-David', group: 'Friends', rsvpStatus: RsvpStatus.PENDING, songRequest: 'Hava Nagila' },
-    { firstName: 'Eitan', lastName: 'Katz', group: 'Work', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Fish', allergies: 'Nuts', tableId: tables[3].id },
-    { firstName: 'Maya', lastName: 'Friedman', group: 'Friends', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Vegetarian', tableId: tables[2].id },
-    { firstName: 'Oren', lastName: 'Mizrahi', group: 'Family', rsvpStatus: RsvpStatus.PENDING },
+    { firstName: 'Sarah', lastName: 'Cohen', phone: '050-1111111', group: 'Family', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Chicken', tableId: tables[0].id },
+    { firstName: 'David', lastName: 'Levy', phone: '050-2222222', group: 'Family', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Fish', tableId: tables[0].id },
+    { firstName: 'Rachel', lastName: 'Green', phone: '052-3333333', group: 'Friends', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Vegetarian', tableId: tables[1].id },
+    { firstName: 'Michael', lastName: 'Ross', phone: '054-4444444', group: 'Friends', rsvpStatus: RsvpStatus.PENDING, tableId: tables[1].id },
+    { firstName: 'Yael', lastName: 'Shapira', phone: '050-5555555', group: 'Work', rsvpStatus: RsvpStatus.DECLINED },
+    { firstName: 'Avi', lastName: 'Goldstein', phone: '052-6666666', group: 'Family', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Chicken', plusOneName: 'Miriam Goldstein', tableId: tables[2].id },
+    { firstName: 'Noa', lastName: 'Ben-David', phone: '054-7777777', group: 'Friends', rsvpStatus: RsvpStatus.PENDING, songRequest: 'Hava Nagila' },
+    { firstName: 'Eitan', lastName: 'Katz', phone: '050-8888888', group: 'Work', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Fish', allergies: 'Nuts', tableId: tables[3].id },
+    { firstName: 'Maya', lastName: 'Friedman', phone: '052-9999999', group: 'Friends', rsvpStatus: RsvpStatus.ACCEPTED, mealChoice: 'Vegetarian', tableId: tables[2].id },
+    { firstName: 'Oren', lastName: 'Mizrahi', phone: '054-0000000', group: 'Family', rsvpStatus: RsvpStatus.PENDING },
   ];
 
   for (const guest of guestData) {

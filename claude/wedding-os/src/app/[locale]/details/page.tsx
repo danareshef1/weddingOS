@@ -1,6 +1,4 @@
 import { prisma } from '@/lib/prisma';
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, MapPin, Clock, Shirt } from 'lucide-react';
 
@@ -13,9 +11,7 @@ export default async function DetailsPage() {
   });
 
   return (
-    <>
-      <Navbar />
-      <main className="container mx-auto px-4 py-16">
+    <main className="container mx-auto px-4 py-16">
         <div className="mb-16 text-center">
           <h1 className="font-serif text-4xl font-bold sm:text-5xl">Wedding Details</h1>
         </div>
@@ -92,8 +88,6 @@ export default async function DetailsPage() {
             </CardContent>
           </Card>
         </div>
-      </main>
-      <Footer />
-    </>
+    </main>
   );
 }

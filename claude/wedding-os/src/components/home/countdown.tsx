@@ -45,7 +45,7 @@ export function Countdown({ targetDate }: CountdownProps) {
   ];
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-3 sm:gap-5">
       {blocks.map((block, i) => (
         <motion.div
           key={block.label}
@@ -54,12 +54,14 @@ export function Countdown({ targetDate }: CountdownProps) {
           transition={{ delay: i * 0.1 }}
           className="flex flex-col items-center"
         >
-          <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm sm:h-20 sm:w-20">
-            <span className="text-2xl font-bold text-white sm:text-3xl">
+          <div className="flex h-18 w-18 items-center justify-center rounded-xl bg-white/15 shadow-lg backdrop-blur-sm sm:h-22 sm:w-22">
+            <span className="font-serif text-3xl font-bold tabular-nums text-white sm:text-4xl">
               {block.value.toString().padStart(2, '0')}
             </span>
           </div>
-          <span className="mt-2 text-xs text-white/80 sm:text-sm">{block.label}</span>
+          <span className="mt-2 text-[11px] font-medium tracking-wider uppercase text-white/70 sm:text-xs">
+            {block.label}
+          </span>
         </motion.div>
       ))}
     </div>

@@ -21,7 +21,8 @@
     "minutes": "דקות",
     "seconds": "שניות",
     "rsvpNow": "אשרו הגעה",
-    "viewDetails": "לפרטים נוספים"
+    "viewDetails": "לפרטים נוספים",
+    "enterDashboard": "כניסה ללוח בקרה"
   },
   "ourStory": {
     "title": "הסיפור שלנו",
@@ -180,7 +181,10 @@
     "installments": "תשלומים",
     "budgetItemAdded": "!פריט התקציב נוסף בהצלחה",
     "addBudgetError": "הוספת פריט התקציב נכשלה. נא לנסות שוב.",
-    "totalDeposits": "סה\"כ מקדמות"
+    "totalDeposits": "סה\"כ מקדמות",
+    "amountPaid": "סכום ששולם",
+    "remainingBalance": "יתרה לתשלום",
+    "paymentDate": "תאריך תשלום"
   },
   "guest": {
     "title": "פורטל אורח",

@@ -11,9 +11,9 @@ export default async function VendorsPage({
   params: { locale: string };
 }) {
   const session = await auth();
-  if (!session?.user) redirect(`/${locale}/auth/login`);
+  if (!session?.user?.weddingId) redirect(`/${locale}/auth/login`);
 
-  const weddingId = session.user.weddingId!;
+  const weddingId = session.user.weddingId;
 
   // Auto-initialize default vendor checklist on first visit
   const count = await prisma.vendor.count({ where: { weddingId } });

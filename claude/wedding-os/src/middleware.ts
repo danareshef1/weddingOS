@@ -10,7 +10,7 @@ const intlMiddleware = createMiddleware({
 });
 
 // Routes that don't require authentication
-const publicPaths = ['/auth/login', '/auth/register', '/auth/verify'];
+const publicPaths = ['/', '/auth/login', '/auth/register', '/auth/verify', '/rsvp', '/guest'];
 // Routes that don't require onboarding
 const preOnboardingPaths = [...publicPaths, '/onboarding'];
 
@@ -58,7 +58,10 @@ export default auth(async function middleware(request) {
 
   // 1. Not logged in → redirect to login (unless already on a public path)
   if (!session?.user) {
-    if (publicPaths.some((p) => pathWithoutLocale.startsWith(p))) {
+    const isPublic = publicPaths.some((p) =>
+      p === '/' ? pathWithoutLocale === '/' : pathWithoutLocale.startsWith(p)
+    );
+    if (isPublic) {
       return intlResponse;
     }
     const loginUrl = new URL(`/${detectedLocale}/auth/login`, request.url);

@@ -21,7 +21,8 @@
     "minutes": "Minutes",
     "seconds": "Seconds",
     "rsvpNow": "RSVP Now",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "enterDashboard": "Enter Dashboard"
   },
   "ourStory": {
     "title": "Our Story",
@@ -180,7 +181,10 @@
     "installments": "Installments",
     "budgetItemAdded": "Budget item added successfully!",
     "addBudgetError": "Failed to add budget item. Please try again.",
-    "totalDeposits": "Total Deposits"
+    "totalDeposits": "Total Deposits",
+    "amountPaid": "Amount Paid",
+    "remainingBalance": "Remaining",
+    "paymentDate": "Payment Date"
   },
   "guest": {
     "title": "Guest Portal",

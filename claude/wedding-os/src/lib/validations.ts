@@ -69,8 +69,10 @@ export const vendorSchema = z.object({
   phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal('')),
   notes: z.string().optional(),
-  contractUrl: z.string().url().optional().or(z.literal('')),
   status: z.enum(['NOT_STARTED', 'CONTACTED', 'BOOKED']).optional(),
+  amountPaid: z.number().min(0).optional(),
+  remainingBalance: z.number().min(0).optional(),
+  paymentDate: z.string().optional(),
 });
 
 export type VendorInput = z.infer<typeof vendorSchema>;

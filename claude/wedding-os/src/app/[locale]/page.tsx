@@ -12,6 +12,7 @@ export default async function HomePage() {
         partner1Name={wedding?.partner1Name || 'Partner 1'}
         partner2Name={wedding?.partner2Name || 'Partner 2'}
         weddingDate={wedding?.date?.toISOString() || new Date('2026-09-15').toISOString()}
+        venue={wedding?.venue || ''}
       />
     </main>
   );

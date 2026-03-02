@@ -12,9 +12,15 @@ export async function createVendor(data: VendorInput) {
   const vendor = await prisma.vendor.create({
     data: {
       weddingId: session.user.weddingId,
-      ...parsed,
+      name: parsed.name,
+      category: parsed.category,
+      phone: parsed.phone || null,
       email: parsed.email || null,
-      contractUrl: parsed.contractUrl || null,
+      notes: parsed.notes || null,
+      status: parsed.status || 'NOT_STARTED',
+      amountPaid: parsed.amountPaid || 0,
+      remainingBalance: parsed.remainingBalance || 0,
+      paymentDate: parsed.paymentDate ? new Date(parsed.paymentDate) : null,
     },
   });
 
@@ -28,9 +34,15 @@ export async function updateVendor(id: string, data: Partial<VendorInput>) {
   await prisma.vendor.updateMany({
     where: { id, weddingId: session.user.weddingId },
     data: {
-      ...data,
-      email: data.email || null,
-      contractUrl: data.contractUrl || null,
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.category !== undefined && { category: data.category }),
+      ...(data.phone !== undefined && { phone: data.phone || null }),
+      ...(data.email !== undefined && { email: data.email || null }),
+      ...(data.notes !== undefined && { notes: data.notes || null }),
+      ...(data.status !== undefined && { status: data.status }),
+      ...(data.amountPaid !== undefined && { amountPaid: data.amountPaid }),
+      ...(data.remainingBalance !== undefined && { remainingBalance: data.remainingBalance }),
+      ...(data.paymentDate !== undefined && { paymentDate: data.paymentDate ? new Date(data.paymentDate) : null }),
     },
   });
 
@@ -64,8 +76,6 @@ const DEFAULT_VENDOR_CATEGORIES = [
 ];
 
 export async function initializeDefaultVendors(weddingId: string) {
-  await requireCouple();
-
   const existing = await prisma.vendor.count({ where: { weddingId } });
   if (existing > 0) return;
 

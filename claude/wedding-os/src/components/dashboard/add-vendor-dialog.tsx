@@ -30,6 +30,9 @@ const initialForm = {
   email: '',
   notes: '',
   status: 'NOT_STARTED' as const,
+  amountPaid: '',
+  remainingBalance: '',
+  paymentDate: '',
 };
 
 export function AddVendorDialog() {
@@ -61,6 +64,9 @@ export function AddVendorDialog() {
       email: form.email || undefined,
       notes: form.notes || undefined,
       status: form.status,
+      amountPaid: parseFloat(form.amountPaid) || 0,
+      remainingBalance: parseFloat(form.remainingBalance) || 0,
+      paymentDate: form.paymentDate || undefined,
     };
 
     const result = vendorSchema.safeParse(data);
@@ -93,12 +99,12 @@ export function AddVendorDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button size="sm">
-          <Store className="me-2 h-4 w-4" />
+        <Button size="sm" className="gap-1.5">
+          <Store className="h-4 w-4" />
           {t('addVendor')}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Store className="h-5 w-5 text-primary" />
@@ -161,6 +167,38 @@ export function AddVendorDialog() {
                 <SelectItem value="BOOKED">{t('booked')}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="vendor-amountPaid">{t('amountPaid')}</Label>
+              <Input
+                id="vendor-amountPaid"
+                type="number"
+                min="0"
+                value={form.amountPaid}
+                onChange={(e) => update('amountPaid', e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="vendor-remainingBalance">{t('remainingBalance')}</Label>
+              <Input
+                id="vendor-remainingBalance"
+                type="number"
+                min="0"
+                value={form.remainingBalance}
+                onChange={(e) => update('remainingBalance', e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="vendor-paymentDate">{t('paymentDate')}</Label>
+              <Input
+                id="vendor-paymentDate"
+                type="date"
+                value={form.paymentDate}
+                onChange={(e) => update('paymentDate', e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="space-y-1.5">

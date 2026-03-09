@@ -5,6 +5,14 @@ import { StatsCards } from '@/components/dashboard/stats-cards';
 import { RsvpChart } from '@/components/dashboard/rsvp-chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat('he-IL', {
+    style: 'currency',
+    currency: 'ILS',
+    minimumFractionDigits: 0,
+  }).format(amount);
+}
+
 export default async function DashboardPage({
   params: { locale },
 }: {
@@ -29,8 +37,11 @@ export default async function DashboardPage({
   const totalPaid = budgetItems.reduce((sum, item) => sum + item.paid, 0);
 
   return (
-    <div className="space-y-6">
-      <h1 className="font-serif text-3xl font-bold">Dashboard</h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="font-serif text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p className="mt-1 text-sm text-gray-500">Your wedding at a glance</p>
+      </div>
 
       <StatsCards
         total={guests.length}
@@ -42,7 +53,7 @@ export default async function DashboardPage({
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>RSVP Overview</CardTitle>
+            <CardTitle className="text-gray-900">RSVP Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <RsvpChart accepted={accepted} declined={declined} pending={pending} />
@@ -51,31 +62,25 @@ export default async function DashboardPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Budget Summary</CardTitle>
+            <CardTitle className="text-gray-900">Budget Summary</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Total Budget</span>
-                <span className="font-bold">
-                  {new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 0 }).format(totalBudget)}
-                </span>
+                <span className="text-sm text-gray-500">Total Budget</span>
+                <span className="font-semibold text-gray-900">{formatCurrency(totalBudget)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Total Paid</span>
-                <span className="font-bold text-green-600">
-                  {new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 0 }).format(totalPaid)}
-                </span>
+                <span className="text-sm text-gray-500">Total Paid</span>
+                <span className="font-semibold text-emerald-600">{formatCurrency(totalPaid)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Remaining</span>
-                <span className="font-bold text-yellow-600">
-                  {new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 0 }).format(totalActual - totalPaid)}
-                </span>
+                <span className="text-sm text-gray-500">Remaining</span>
+                <span className="font-semibold text-amber-600">{formatCurrency(totalActual - totalPaid)}</span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
                 <div
-                  className="h-full bg-green-500 transition-all"
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all"
                   style={{ width: `${totalActual > 0 ? (totalPaid / totalActual) * 100 : 0}%` }}
                 />
               </div>

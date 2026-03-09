@@ -12,7 +12,16 @@ interface Petal {
   opacity: number;
   sway: number;
   swaySpeed: number;
+  color: string;
 }
+
+const PETAL_COLORS = [
+  'rgba(244, 163, 188, OPACITY)',  // rose
+  'rgba(252, 205, 218, OPACITY)',  // pink
+  'rgba(253, 186, 168, OPACITY)',  // peach
+  'rgba(221, 190, 230, OPACITY)',  // lavender
+  'rgba(255, 218, 185, OPACITY)',  // champagne
+];
 
 export function FloatingPetals() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,7 +35,7 @@ export function FloatingPetals() {
 
     let animationId: number;
     const petals: Petal[] = [];
-    const PETAL_COUNT = 20;
+    const PETAL_COUNT = 15;
 
     function resize() {
       canvas!.width = window.innerWidth;
@@ -35,18 +44,19 @@ export function FloatingPetals() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Initialize petals
     for (let i = 0; i < PETAL_COUNT; i++) {
+      const opacity = Math.random() * 0.25 + 0.1;
       petals.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height - canvas.height,
-        size: Math.random() * 8 + 4,
-        speed: Math.random() * 1 + 0.5,
+        size: Math.random() * 10 + 5,
+        speed: Math.random() * 0.6 + 0.3,
         rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.02,
-        opacity: Math.random() * 0.4 + 0.2,
-        sway: Math.random() * 2 - 1,
-        swaySpeed: Math.random() * 0.02 + 0.01,
+        rotationSpeed: (Math.random() - 0.5) * 0.015,
+        opacity,
+        sway: Math.random() * 1.5 - 0.75,
+        swaySpeed: Math.random() * 0.015 + 0.005,
+        color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)].replace('OPACITY', opacity.toString()),
       });
     }
 
@@ -71,10 +81,10 @@ export function FloatingPetals() {
         ctx!.rotate(petal.rotation);
         ctx!.globalAlpha = petal.opacity;
 
-        // Draw petal shape
+        // Petal shape
         ctx!.beginPath();
-        ctx!.fillStyle = '#e8a0bf';
-        ctx!.ellipse(0, 0, petal.size, petal.size * 0.6, 0, 0, Math.PI * 2);
+        ctx!.fillStyle = petal.color;
+        ctx!.ellipse(0, 0, petal.size, petal.size * 0.55, 0, 0, Math.PI * 2);
         ctx!.fill();
 
         ctx!.restore();

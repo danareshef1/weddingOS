@@ -24,7 +24,10 @@ export default async function GuestsPage({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-serif text-3xl font-bold">Guests</h1>
+        <div>
+          <h1 className="font-serif text-2xl font-bold text-gray-900">Guests</h1>
+          <p className="mt-1 text-sm text-gray-500">{guests.length} guests total</p>
+        </div>
         <div className="flex gap-2">
           <AddGuestDialog />
           <CsvImport />

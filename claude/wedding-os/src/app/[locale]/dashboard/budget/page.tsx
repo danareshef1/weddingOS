@@ -5,6 +5,7 @@ import { BudgetTable } from '@/components/dashboard/budget-table';
 import { BudgetChart } from '@/components/dashboard/budget-chart';
 import { AddBudgetDialog } from '@/components/dashboard/add-budget-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Banknote, Receipt, CreditCard, PiggyBank } from 'lucide-react';
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('he-IL', {
@@ -32,51 +33,45 @@ export default async function BudgetPage({
   const totalPaid = items.reduce((s, i) => s + i.paid, 0);
   const totalDeposits = items.reduce((s, i) => s + i.deposit, 0);
 
+  const summaryCards = [
+    { label: 'Total Estimated', value: totalEstimated, icon: Banknote, iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
+    { label: 'Total Actual', value: totalActual, icon: Receipt, iconBg: 'bg-violet-50', iconColor: 'text-violet-600' },
+    { label: 'Total Paid', value: totalPaid, icon: CreditCard, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
+    { label: 'Total Deposits', value: totalDeposits, icon: PiggyBank, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-3xl font-bold">Budget</h1>
+        <div>
+          <h1 className="font-serif text-2xl font-bold text-gray-900">Budget</h1>
+          <p className="mt-1 text-sm text-gray-500">{items.length} items tracked</p>
+        </div>
         <AddBudgetDialog />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Estimated</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(totalEstimated)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Actual</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(totalActual)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Paid</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(totalPaid)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Deposits</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(totalDeposits)}</p>
-          </CardContent>
-        </Card>
+        {summaryCards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <Card key={card.label}>
+              <CardContent className="flex items-center gap-4 p-5">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBg}`}>
+                  <Icon className={`h-5 w-5 ${card.iconColor}`} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">{card.label}</p>
+                  <p className="text-xl font-bold tabular-nums text-gray-900">{formatCurrency(card.value)}</p>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Budget by Category</CardTitle>
+          <CardTitle className="text-gray-900">Budget by Category</CardTitle>
         </CardHeader>
         <CardContent>
           <BudgetChart items={items} />

@@ -25,6 +25,7 @@ export default async function DashboardPage({
   const pending = guests.filter((g) => g.rsvpStatus === 'PENDING').length;
 
   const totalBudget = budgetItems.reduce((sum, item) => sum + item.estimated, 0);
+  const totalActual = budgetItems.reduce((sum, item) => sum + item.actual, 0);
   const totalPaid = budgetItems.reduce((sum, item) => sum + item.paid, 0);
 
   return (
@@ -69,13 +70,13 @@ export default async function DashboardPage({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Remaining</span>
                 <span className="font-bold text-yellow-600">
-                  {new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 0 }).format(totalBudget - totalPaid)}
+                  {new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 0 }).format(totalActual - totalPaid)}
                 </span>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                 <div
                   className="h-full bg-green-500 transition-all"
-                  style={{ width: `${totalBudget > 0 ? (totalPaid / totalBudget) * 100 : 0}%` }}
+                  style={{ width: `${totalActual > 0 ? (totalPaid / totalActual) * 100 : 0}%` }}
                 />
               </div>
             </div>

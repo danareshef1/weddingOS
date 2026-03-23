@@ -259,7 +259,12 @@
     "reservePersonPrice": "Price per Reserve Person",
     "extraHourPrice": "Price per Extra Hour",
     "venueTotal": "Venue Total",
-    "venueBaseHours": "Base: 7 hours included"
+    "venueBaseHours": "Base: 7 hours included",
+    "extraPersons": "Extra Persons",
+    "extraHours": "Extra Hours",
+    "extraPersonsCost": "Extra persons cost",
+    "extraHoursCost": "Extra hours cost",
+    "venueBase": "Base ({count} guests)"
   },
   "guest": {
     "title": "Guest Portal",

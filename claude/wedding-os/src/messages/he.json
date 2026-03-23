@@ -259,7 +259,12 @@
     "reservePersonPrice": "מחיר לאדם רזרבי",
     "extraHourPrice": "מחיר לשעה נוספת",
     "venueTotal": "סה\"כ אולם",
-    "venueBaseHours": "בסיס: 7 שעות כלולות"
+    "venueBaseHours": "בסיס: 7 שעות כלולות",
+    "extraPersons": "אנשים נוספים",
+    "extraHours": "שעות נוספות",
+    "extraPersonsCost": "עלות אנשים נוספים",
+    "extraHoursCost": "עלות שעות נוספות",
+    "venueBase": "בסיס ({count} אורחים)"
   },
   "guest": {
     "title": "פורטל אורח",

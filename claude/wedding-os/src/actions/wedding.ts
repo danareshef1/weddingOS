@@ -19,3 +19,24 @@ export async function updateWeddingSettings(data: WeddingSettingsInput) {
 
   revalidatePath('/dashboard/settings');
 }
+
+export async function updateVenueBudget(data: {
+  venuePricePerPerson: number;
+  venueMinGuests: number;
+  venueReservePrice: number;
+  venueExtraHourPrice: number;
+}) {
+  const session = await requireCouple();
+
+  await prisma.wedding.update({
+    where: { id: session.user.weddingId },
+    data: {
+      venuePricePerPerson: data.venuePricePerPerson,
+      venueMinGuests: data.venueMinGuests,
+      venueReservePrice: data.venueReservePrice,
+      venueExtraHourPrice: data.venueExtraHourPrice,
+    },
+  });
+
+  revalidatePath('/dashboard/budget');
+}

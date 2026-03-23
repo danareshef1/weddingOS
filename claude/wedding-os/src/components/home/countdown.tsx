@@ -45,21 +45,22 @@ export function Countdown({ targetDate }: CountdownProps) {
   ];
 
   return (
-    <div className="flex gap-3 sm:gap-5">
+    // Force LTR so numbers always flow left-to-right regardless of locale
+    <div dir="ltr" className="flex gap-3 sm:gap-4">
       {blocks.map((block, i) => (
         <motion.div
-          key={block.label}
-          initial={{ opacity: 0, y: 20 }}
+          key={i}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.1 }}
+          transition={{ delay: i * 0.08 }}
           className="flex flex-col items-center"
         >
-          <div className="flex h-18 w-18 items-center justify-center rounded-xl bg-white/15 shadow-lg backdrop-blur-sm sm:h-22 sm:w-22">
-            <span className="font-serif text-3xl font-bold tabular-nums text-white sm:text-4xl">
+          <div className="flex h-[72px] w-[72px] items-center justify-center rounded-2xl border border-gray-200/60 bg-white/80 shadow-lg shadow-gray-200/40 backdrop-blur-sm sm:h-[88px] sm:w-[88px]">
+            <span className="font-serif text-3xl font-bold tabular-nums text-gray-900 sm:text-4xl">
               {block.value.toString().padStart(2, '0')}
             </span>
           </div>
-          <span className="mt-2 text-[11px] font-medium tracking-wider uppercase text-white/70 sm:text-xs">
+          <span className="mt-2 text-[10px] font-medium tracking-wider uppercase text-gray-400 sm:text-xs">
             {block.label}
           </span>
         </motion.div>

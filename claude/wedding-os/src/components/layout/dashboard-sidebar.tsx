@@ -17,6 +17,7 @@ import {
   LogOut,
   Home,
   Globe,
+  Heart,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
@@ -48,21 +49,25 @@ export function DashboardSidebar() {
   return (
     <aside
       className={cn(
-        'flex h-full flex-col border-e bg-card transition-all duration-300',
-        collapsed ? 'w-16' : 'w-64'
+        'flex h-full flex-col border-e bg-white transition-all duration-300',
+        collapsed ? 'w-16' : 'w-60'
       )}
     >
+      {/* Logo + collapse */}
       <div className="flex h-14 items-center justify-between border-b px-3">
         {!collapsed && (
-          <Link href={`/${locale}`} className="font-serif text-base font-bold text-primary">
-            WeddingOS
+          <Link href={`/${locale}`} className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50">
+              <Heart className="h-3.5 w-3.5 text-rose-500" />
+            </div>
+            <span className="font-serif text-base font-bold text-gray-900">WeddingOS</span>
           </Link>
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8 shrink-0"
+          className="h-8 w-8 shrink-0 text-gray-400 hover:text-gray-600"
         >
           {collapsed ? (
             <ChevronRight className="h-4 w-4" />
@@ -73,11 +78,11 @@ export function DashboardSidebar() {
       </div>
 
       {/* Home link */}
-      <div className="border-b p-2">
+      <div className="border-b px-3 py-2">
         <Link
           href={`/${locale}`}
           className={cn(
-            'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent text-muted-foreground hover:text-foreground',
+            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900',
             collapsed && 'justify-center px-2'
           )}
           title={collapsed ? tNav('home') : undefined}
@@ -87,7 +92,8 @@ export function DashboardSidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-2">
+      {/* Navigation */}
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
         {links.map((link) => {
           const isActive =
             pathname === link.href ||
@@ -99,24 +105,27 @@ export function DashboardSidebar() {
               key={link.href}
               href={link.href}
               className={cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent',
-                isActive && 'bg-accent font-medium text-primary',
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+                isActive
+                  ? 'bg-rose-50 font-medium text-rose-700'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                 collapsed && 'justify-center px-2'
               )}
               title={collapsed ? link.label : undefined}
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <Icon className={cn('h-4 w-4 shrink-0', isActive && 'text-rose-600')} />
               {!collapsed && <span>{link.label}</span>}
             </Link>
           );
         })}
       </nav>
 
-      <div className="space-y-1 border-t p-2">
+      {/* Bottom actions */}
+      <div className="space-y-0.5 border-t px-3 py-3">
         <Link
           href={switchLocalePath}
           className={cn(
-            'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent text-muted-foreground hover:text-foreground',
+            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900',
             collapsed && 'justify-center px-2'
           )}
           title={collapsed ? (otherLocale === 'he' ? 'עברית' : 'English') : undefined}
@@ -127,7 +136,7 @@ export function DashboardSidebar() {
         <button
           onClick={() => signOut({ callbackUrl: `/${locale}` })}
           className={cn(
-            'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent text-muted-foreground hover:text-foreground',
+            'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900',
             collapsed && 'justify-center px-2'
           )}
           title={collapsed ? t('logout') : undefined}

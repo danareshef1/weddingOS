@@ -36,6 +36,10 @@ model Wedding {
   locale             String   @default("he")
   theme              String   @default("default")
   onboardingComplete Boolean  @default(false)
+  venuePricePerPerson  Float  @default(0)
+  venueMinGuests       Int    @default(0)
+  venueReservePrice    Float  @default(0)
+  venueExtraHourPrice  Float  @default(0)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 

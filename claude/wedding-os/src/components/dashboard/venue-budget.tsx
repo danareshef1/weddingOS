@@ -177,19 +177,3 @@ export function VenueBudget(props: VenueBudgetProps) {
   );
 }
 
-/** Compute venue total from wedding data (for use in server components) */
-export function computeVenueTotal(wedding: {
-  venuePricePerPerson: number;
-  venueMinGuests: number;
-  venueReservePrice: number;
-  venueExtraHourPrice: number;
-  venueExtraPersons: number;
-  venueExtraHours: number;
-} | null) {
-  if (!wedding) return 0;
-  return (
-    wedding.venuePricePerPerson * wedding.venueMinGuests +
-    wedding.venueReservePrice * wedding.venueExtraPersons +
-    wedding.venueExtraHourPrice * wedding.venueExtraHours
-  );
-}

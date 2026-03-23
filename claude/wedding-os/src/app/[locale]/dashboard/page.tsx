@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { StatsCards } from '@/components/dashboard/stats-cards';
 import { RsvpChart } from '@/components/dashboard/rsvp-chart';
-import { computeVenueTotal } from '@/components/dashboard/venue-budget';
+import { computeVenueTotal } from '@/lib/venue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 function formatCurrency(amount: number) {

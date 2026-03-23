@@ -5,7 +5,8 @@ import { getTranslations } from 'next-intl/server';
 import { BudgetTable } from '@/components/dashboard/budget-table';
 import { BudgetChart } from '@/components/dashboard/budget-chart';
 import { AddBudgetDialog } from '@/components/dashboard/add-budget-dialog';
-import { VenueBudget, computeVenueTotal } from '@/components/dashboard/venue-budget';
+import { VenueBudget } from '@/components/dashboard/venue-budget';
+import { computeVenueTotal } from '@/lib/venue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Banknote, Receipt, CreditCard, PiggyBank } from 'lucide-react';
 

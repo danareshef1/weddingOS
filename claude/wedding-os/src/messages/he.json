@@ -264,7 +264,11 @@
     "extraHours": "שעות נוספות",
     "extraPersonsCost": "עלות אנשים נוספים",
     "extraHoursCost": "עלות שעות נוספות",
-    "venueBase": "בסיס ({count} אורחים)"
+    "venueBase": "בסיס ({count} אורחים)",
+    "addVenueItem": "הוסף פריט",
+    "venueItemName": "שם הפריט",
+    "venueItemCost": "עלות",
+    "venueItems": "פריטים נוספים"
   },
   "guest": {
     "title": "פורטל אורח",

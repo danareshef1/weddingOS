@@ -264,7 +264,11 @@
     "extraHours": "Extra Hours",
     "extraPersonsCost": "Extra persons cost",
     "extraHoursCost": "Extra hours cost",
-    "venueBase": "Base ({count} guests)"
+    "venueBase": "Base ({count} guests)",
+    "addVenueItem": "Add Item",
+    "venueItemName": "Item Name",
+    "venueItemCost": "Cost",
+    "venueItems": "Additional Items"
   },
   "guest": {
     "title": "Guest Portal",

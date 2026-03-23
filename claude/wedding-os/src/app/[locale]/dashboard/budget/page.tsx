@@ -48,9 +48,12 @@ export default async function BudgetPage({
     }),
   ]);
 
-  const venueTotal = computeVenueTotal(wedding);
-  const totalEstimated = items.reduce((s, i) => s + i.estimated, 0) + venueTotal;
-  const totalActual = items.reduce((s, i) => s + i.actual, 0) + venueTotal;
+  const venueItems = items.filter((i) => i.category === 'Venue');
+  const nonVenueItems = items.filter((i) => i.category !== 'Venue');
+  const venueItemsCost = venueItems.reduce((s, i) => s + i.actual, 0);
+  const venueTotal = computeVenueTotal(wedding) + venueItemsCost;
+  const totalEstimated = nonVenueItems.reduce((s, i) => s + i.estimated, 0) + venueTotal;
+  const totalActual = nonVenueItems.reduce((s, i) => s + i.actual, 0) + venueTotal;
   const totalPaid = items.reduce((s, i) => s + i.paid, 0);
   const totalDeposits = items.reduce((s, i) => s + i.deposit, 0);
 
@@ -78,6 +81,7 @@ export default async function BudgetPage({
         venueExtraHourPrice={wedding?.venueExtraHourPrice ?? 0}
         venueExtraPersons={wedding?.venueExtraPersons ?? 0}
         venueExtraHours={wedding?.venueExtraHours ?? 0}
+        venueItems={venueItems.map((i) => ({ id: i.id, description: i.description, actual: i.actual }))}
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -108,7 +112,7 @@ export default async function BudgetPage({
         </CardContent>
       </Card>
 
-      <BudgetTable items={items} />
+      <BudgetTable items={nonVenueItems} />
     </div>
   );
 }

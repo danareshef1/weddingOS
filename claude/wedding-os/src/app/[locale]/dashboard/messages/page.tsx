@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -12,6 +13,8 @@ export default async function MessagesPage({
   const session = await auth();
   if (!session?.user) redirect(`/${locale}/auth/login`);
 
+  const t = await getTranslations('dashboard');
+
   const templates = await prisma.messageTemplate.findMany({
     where: { weddingId: session.user.weddingId! },
     orderBy: { createdAt: 'desc' },
@@ -19,7 +22,7 @@ export default async function MessagesPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="font-serif text-3xl font-bold">Message Templates</h1>
+      <h1 className="font-serif text-3xl font-bold">{t('messageTemplates')}</h1>
 
       <div className="grid gap-4 sm:grid-cols-2">
         {templates.map((template) => (
@@ -30,7 +33,7 @@ export default async function MessagesPage({
                 <Badge variant="outline">{template.channel}</Badge>
               </div>
               {template.subject && (
-                <p className="text-sm text-muted-foreground">Subject: {template.subject}</p>
+                <p className="text-sm text-muted-foreground">{t('subject')}: {template.subject}</p>
               )}
             </CardHeader>
             <CardContent>
@@ -41,7 +44,7 @@ export default async function MessagesPage({
       </div>
 
       {templates.length === 0 && (
-        <p className="text-muted-foreground">No message templates yet</p>
+        <p className="text-muted-foreground">{t('noTemplatesYet')}</p>
       )}
     </div>
   );

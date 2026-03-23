@@ -31,15 +31,15 @@ export function BudgetTable({ items }: { items: BudgetItem[] }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-gray-50/80">
-            <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">Category</th>
-            <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">Vendor</th>
-            <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">Description</th>
-            <th className="px-4 py-3 text-end text-xs font-medium uppercase tracking-wider text-gray-500">Estimated</th>
-            <th className="px-4 py-3 text-end text-xs font-medium uppercase tracking-wider text-gray-500">Actual</th>
+            <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('category')}</th>
+            <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('vendor')}</th>
+            <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('description')}</th>
+            <th className="px-4 py-3 text-end text-xs font-medium uppercase tracking-wider text-gray-500">{t('estimated')}</th>
+            <th className="px-4 py-3 text-end text-xs font-medium uppercase tracking-wider text-gray-500">{t('actual')}</th>
             <th className="px-4 py-3 text-end text-xs font-medium uppercase tracking-wider text-gray-500">{t('deposit')}</th>
-            <th className="px-4 py-3 text-end text-xs font-medium uppercase tracking-wider text-gray-500">Paid</th>
+            <th className="px-4 py-3 text-end text-xs font-medium uppercase tracking-wider text-gray-500">{t('paid')}</th>
             <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('paymentMethod')}</th>
-            <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
+            <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('status')}</th>
             <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500"></th>
           </tr>
         </thead>
@@ -61,11 +61,11 @@ export function BudgetTable({ items }: { items: BudgetItem[] }) {
                 </td>
                 <td className="px-4 py-3.5">
                   {item.paid >= item.actual && item.actual > 0 ? (
-                    <Badge variant="success">Paid</Badge>
+                    <Badge variant="success">{t('paid')}</Badge>
                   ) : item.paid > 0 ? (
-                    <Badge variant="warning">Partial</Badge>
+                    <Badge variant="warning">{t('partial')}</Badge>
                   ) : (
-                    <Badge variant="outline">Unpaid</Badge>
+                    <Badge variant="outline">{t('unpaid')}</Badge>
                   )}
                 </td>
                 <td className="px-4 py-3.5">
@@ -84,7 +84,7 @@ export function BudgetTable({ items }: { items: BudgetItem[] }) {
         </tbody>
         <tfoot>
           <tr className="border-t bg-gray-50/80 font-semibold text-gray-900">
-            <td className="px-4 py-3" colSpan={3}>Total</td>
+            <td className="px-4 py-3" colSpan={3}>{t('total')}</td>
             <td className="px-4 py-3 text-end tabular-nums">
               {formatCurrency(items.reduce((s, i) => s + i.estimated, 0))}
             </td>

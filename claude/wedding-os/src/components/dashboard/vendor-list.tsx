@@ -35,7 +35,7 @@ export function VendorList({ vendors }: { vendors: Vendor[] }) {
   if (vendors.length === 0) {
     return (
       <p className="py-16 text-center text-sm text-gray-400">
-        No vendors yet.
+        {t('noVendorsYet')}
       </p>
     );
   }

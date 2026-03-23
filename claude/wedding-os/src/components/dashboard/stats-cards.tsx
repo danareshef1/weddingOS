@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Users, UserCheck, UserX, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,11 +13,13 @@ interface StatsCardsProps {
 }
 
 export function StatsCards({ total, accepted, declined, pending }: StatsCardsProps) {
+  const t = useTranslations('dashboard');
+
   const cards = [
-    { label: 'Total Guests', value: total, icon: Users, iconBg: 'bg-blue-50', iconColor: 'text-blue-600', accent: 'border-s-blue-400' },
-    { label: 'Accepted', value: accepted, icon: UserCheck, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600', accent: 'border-s-emerald-400' },
-    { label: 'Declined', value: declined, icon: UserX, iconBg: 'bg-rose-50', iconColor: 'text-rose-500', accent: 'border-s-rose-400' },
-    { label: 'Pending', value: pending, icon: Clock, iconBg: 'bg-amber-50', iconColor: 'text-amber-600', accent: 'border-s-amber-400' },
+    { label: t('totalGuests'), value: total, icon: Users, iconBg: 'bg-blue-50', iconColor: 'text-blue-600', accent: 'border-s-blue-400' },
+    { label: t('accepted'), value: accepted, icon: UserCheck, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600', accent: 'border-s-emerald-400' },
+    { label: t('declined'), value: declined, icon: UserX, iconBg: 'bg-rose-50', iconColor: 'text-rose-500', accent: 'border-s-rose-400' },
+    { label: t('pending'), value: pending, icon: Clock, iconBg: 'bg-amber-50', iconColor: 'text-amber-600', accent: 'border-s-amber-400' },
   ];
 
   return (

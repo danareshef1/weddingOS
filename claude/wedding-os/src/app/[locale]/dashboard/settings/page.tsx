@@ -43,33 +43,33 @@ export default function SettingsPage() {
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Wedding Details</CardTitle>
+          <CardTitle>{t('weddingDetails')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="partner1Name">Partner 1 Name</Label>
+                <Label htmlFor="partner1Name">{t('partner1Name')}</Label>
                 <Input id="partner1Name" name="partner1Name" required className="mt-1" />
               </div>
               <div>
-                <Label htmlFor="partner2Name">Partner 2 Name</Label>
+                <Label htmlFor="partner2Name">{t('partner2Name')}</Label>
                 <Input id="partner2Name" name="partner2Name" required className="mt-1" />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="date">Wedding Date</Label>
+              <Label htmlFor="date">{t('weddingDate')}</Label>
               <Input id="date" name="date" type="date" className="mt-1" />
             </div>
 
             <div>
-              <Label htmlFor="venue">Venue</Label>
+              <Label htmlFor="venue">{t('venue')}</Label>
               <Input id="venue" name="venue" className="mt-1" />
             </div>
 
             <div>
-              <Label>Default Language</Label>
+              <Label>{t('defaultLanguage')}</Label>
               <Select name="locale" defaultValue="he">
                 <SelectTrigger className="mt-1">
                   <SelectValue />
@@ -82,24 +82,24 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <Label>Theme</Label>
+              <Label>{t('theme')}</Label>
               <Select name="theme" defaultValue="default">
                 <SelectTrigger className="mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="default">Default (Rose)</SelectItem>
-                  <SelectItem value="elegant">Elegant (Gold)</SelectItem>
-                  <SelectItem value="modern">Modern (Minimal)</SelectItem>
+                  <SelectItem value="default">{t('themeDefault')}</SelectItem>
+                  <SelectItem value="elegant">{t('themeElegant')}</SelectItem>
+                  <SelectItem value="modern">{t('themeModern')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="flex items-center gap-4">
               <Button type="submit" disabled={saving}>
-                {saving ? 'Saving...' : t('save')}
+                {saving ? t('saving') : t('save')}
               </Button>
-              {saved && <span className="text-sm text-green-600">Saved!</span>}
+              {saved && <span className="text-sm text-green-600">{t('saved')}</span>}
             </div>
           </form>
         </CardContent>

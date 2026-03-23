@@ -45,12 +45,12 @@ export function GuestTable({ guests }: { guests: GuestWithTable[] }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-gray-50/80">
-              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">Name</th>
-              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">Phone</th>
-              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">Group</th>
-              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">RSVP</th>
-              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">Meal</th>
-              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">Table</th>
+              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('name')}</th>
+              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('phone')}</th>
+              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('group')}</th>
+              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('rsvpStatus')}</th>
+              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('meal')}</th>
+              <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">{t('table')}</th>
               <th className="px-4 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500"></th>
             </tr>
           </thead>
@@ -88,7 +88,7 @@ export function GuestTable({ guests }: { guests: GuestWithTable[] }) {
         </table>
 
         {filtered.length === 0 && (
-          <p className="p-12 text-center text-sm text-gray-400">No guests found</p>
+          <p className="p-12 text-center text-sm text-gray-400">{t('noGuestsFound')}</p>
         )}
       </div>
     </div>

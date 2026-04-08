@@ -25,6 +25,8 @@ export async function updateVenueBudget(data: {
   venueMinGuests: number;
   venueReservePrice: number;
   venueExtraHourPrice: number;
+  venueExtraPersons: number;
+  venueExtraHours: number;
 }) {
   const session = await requireCouple();
 
@@ -35,6 +37,8 @@ export async function updateVenueBudget(data: {
       venueMinGuests: data.venueMinGuests,
       venueReservePrice: data.venueReservePrice,
       venueExtraHourPrice: data.venueExtraHourPrice,
+      venueExtraPersons: data.venueExtraPersons,
+      venueExtraHours: data.venueExtraHours,
     },
   });
 

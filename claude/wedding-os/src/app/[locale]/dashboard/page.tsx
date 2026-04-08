@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { StatsCards } from '@/components/dashboard/stats-cards';
 import { RsvpChart } from '@/components/dashboard/rsvp-chart';
+import { computeVenueTotal } from '@/lib/venue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 function formatCurrency(amount: number) {
@@ -25,17 +26,28 @@ export default async function DashboardPage({
   const t = await getTranslations('dashboard');
   const weddingId = session.user.weddingId!;
 
-  const [guests, budgetItems] = await Promise.all([
+  const [guests, budgetItems, wedding] = await Promise.all([
     prisma.guest.findMany({ where: { weddingId } }),
     prisma.budgetItem.findMany({ where: { weddingId } }),
+    prisma.wedding.findUnique({
+      where: { id: weddingId },
+      select: {
+        venuePricePerPerson: true,
+        venueMinGuests: true,
+        venueReservePrice: true,
+        venueExtraHourPrice: true,
+        venueExtraPersons: true,
+        venueExtraHours: true,
+      },
+    }),
   ]);
 
   const accepted = guests.filter((g) => g.rsvpStatus === 'ACCEPTED').length;
   const declined = guests.filter((g) => g.rsvpStatus === 'DECLINED').length;
   const pending = guests.filter((g) => g.rsvpStatus === 'PENDING').length;
 
-  const totalBudget = budgetItems.reduce((sum, item) => sum + item.estimated, 0);
-  const totalActual = budgetItems.reduce((sum, item) => sum + item.actual, 0);
+  const venueTotal = computeVenueTotal(wedding);
+  const totalActual = budgetItems.reduce((sum, item) => sum + item.actual, 0) + venueTotal;
   const totalPaid = budgetItems.reduce((sum, item) => sum + item.paid, 0);
 
   return (

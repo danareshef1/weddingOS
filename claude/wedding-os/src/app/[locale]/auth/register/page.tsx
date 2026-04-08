@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { signIn } from 'next-auth/react';
+
 import { motion } from 'framer-motion';
 import { Heart, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -44,17 +44,7 @@ export default function RegisterPage() {
         return;
       }
 
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError(t('invalidCredentials'));
-      } else {
-        window.location.href = `/${locale}/onboarding`;
-      }
+      window.location.href = `/${locale}/auth/verify`;
     } catch {
       setError(t('registrationFailed'));
     } finally {

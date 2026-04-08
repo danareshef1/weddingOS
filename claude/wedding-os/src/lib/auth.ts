@@ -2,12 +2,8 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from './prisma';
-import { createHash } from 'crypto';
+import bcrypt from 'bcryptjs';
 import type { Role } from '@prisma/client';
-
-function hashPassword(password: string): string {
-  return createHash('sha256').update(password).digest('hex');
-}
 
 declare module 'next-auth' {
   interface Session {
@@ -52,11 +48,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!user || !user.passwordHash) return null;
 
-        // Check hashed password, or accept "demo1234" for seeded users
-        const hashedInput = hashPassword(credentials.password as string);
-        const isValid =
-          credentials.password === 'demo1234' ||
-          user.passwordHash === hashedInput;
+        if (!user.emailVerified) return null;
+
+        const isValid = await bcrypt.compare(credentials.password as string, user.passwordHash);
 
         if (!isValid) return null;
 

@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { registerSchema } from '@/lib/validations';
-import { createHash } from 'crypto';
-
-// Simple hash for demo - in production use bcrypt
-function hashPassword(password: string): string {
-  return createHash('sha256').update(password).digest('hex');
-}
+import bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
+import { sendVerificationEmail } from '@/lib/mailer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,17 +29,31 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user without a wedding (will be created during onboarding)
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email,
         name,
-        passwordHash: hashPassword(password),
+        passwordHash: await bcrypt.hash(password, 12),
         role: 'COUPLE',
         weddingId: null,
       },
     });
 
-    return NextResponse.json({ success: true, userId: user.id });
+    // Generate verification token (expires in 24h)
+    const token = randomBytes(32).toString('hex');
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token,
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    });
+
+    sendVerificationEmail(email, token).catch((err) =>
+      console.error('Failed to send verification email:', err)
+    );
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

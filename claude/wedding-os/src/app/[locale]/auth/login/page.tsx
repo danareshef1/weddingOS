@@ -19,6 +19,11 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const searchParams = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search)
+    : null;
+  const justVerified = searchParams?.get('verified') === '1';
+
   async function handleCredentials(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -56,6 +61,15 @@ export default function LoginPage() {
 
         <Card className="border-gray-200/60 shadow-lg shadow-gray-200/50">
           <CardContent className="p-6">
+            {justVerified && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mb-4 rounded-md bg-green-50 px-4 py-2 text-sm text-green-700"
+              >
+                Email verified! You can now sign in.
+              </motion.p>
+            )}
             <form onSubmit={handleCredentials} className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="text-gray-700">{t('email')}</Label>

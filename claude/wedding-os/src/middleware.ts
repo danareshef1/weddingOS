@@ -12,7 +12,7 @@ const intlMiddleware = createMiddleware({
 // Routes that don't require authentication
 const publicPaths = ['/', '/auth/login', '/auth/register', '/auth/verify', '/rsvp', '/guest'];
 // Routes that don't require onboarding
-const preOnboardingPaths = [...publicPaths, '/onboarding'];
+
 
 function stripLocale(pathname: string): string {
   for (const locale of locales) {
@@ -71,7 +71,8 @@ export default auth(async function middleware(request) {
 
   // 2. Logged in but onboarding not complete → redirect to onboarding
   if (!session.user.onboardingComplete) {
-    if (preOnboardingPaths.some((p) => pathWithoutLocale.startsWith(p))) {
+    const allowedBeforeOnboarding = ['/auth/', '/onboarding'];
+    if (allowedBeforeOnboarding.some((p) => pathWithoutLocale.startsWith(p))) {
       return intlResponse;
     }
     const onboardingUrl = new URL(`/${detectedLocale}/onboarding`, request.url);

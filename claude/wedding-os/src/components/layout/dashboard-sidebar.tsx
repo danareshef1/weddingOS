@@ -9,7 +9,7 @@ import {
   Armchair,
   Wallet,
   Store,
-  Image,
+  FolderOpen,
   MessageSquare,
   Settings,
   ChevronLeft,
@@ -41,7 +41,7 @@ export function DashboardSidebar() {
     { href: `/${locale}/dashboard/seating`, label: t('seating'), icon: Armchair },
     { href: `/${locale}/dashboard/budget`, label: t('budget'), icon: Wallet },
     { href: `/${locale}/dashboard/vendors`, label: t('vendors'), icon: Store },
-    { href: `/${locale}/dashboard/gallery`, label: t('gallery'), icon: Image },
+    { href: `/${locale}/dashboard/documents`, label: t('documents'), icon: FolderOpen },
     { href: `/${locale}/dashboard/messages`, label: t('messages'), icon: MessageSquare },
     { href: `/${locale}/dashboard/settings`, label: t('settings'), icon: Settings },
   ];

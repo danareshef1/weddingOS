@@ -52,6 +52,7 @@ model Wedding {
   budgetItems      BudgetItem[]
   vendors          Vendor[]
   galleryImages    GalleryImage[]
+  documents        Document[]
   messageTemplates MessageTemplate[]
   faqs             FAQ[]
   timelineEvents   TimelineEvent[]
@@ -256,6 +257,21 @@ model TimelineEvent {
   date        DateTime
   iconType    String?
   order       Int      @default(0)
+
+  @@index([weddingId])
+}
+
+model Document {
+  id        String   @id @default(cuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name      String
+  url       String
+  fileType  String
+  size      Int
+  category  String   @default("other")
+  notes     String?
+  createdAt DateTime @default(now())
 
   @@index([weddingId])
 }

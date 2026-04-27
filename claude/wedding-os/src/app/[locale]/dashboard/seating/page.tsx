@@ -3,7 +3,6 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { SeatingCanvas } from '@/components/dashboard/seating-canvas';
-import { Button } from '@/components/ui/button';
 
 export default async function SeatingPage({
   params: { locale },
@@ -16,7 +15,7 @@ export default async function SeatingPage({
   const t = await getTranslations('dashboard');
   const weddingId = session.user.weddingId!;
 
-  const [tables, unseatedGuests] = await Promise.all([
+  const [tables, unseatedGuests, wedding] = await Promise.all([
     prisma.table.findMany({
       where: { weddingId },
       include: { guests: true },
@@ -26,20 +25,20 @@ export default async function SeatingPage({
       where: { weddingId, tableId: null, rsvpStatus: 'ACCEPTED' },
       orderBy: [{ group: 'asc' }, { lastName: 'asc' }],
     }),
+    prisma.wedding.findUniqueOrThrow({
+      where: { id: weddingId },
+    }),
   ]);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-serif text-3xl font-bold">{t('seatingPlan')}</h1>
-        <form action="/api/seating/auto" method="POST">
-          <Button type="submit" variant="outline">
-            {t('autoSeatGuests')}
-          </Button>
-        </form>
-      </div>
+      <h1 className="font-serif text-3xl font-bold">{t('seatingPlan')}</h1>
 
-      <SeatingCanvas tables={tables} unseatedGuests={unseatedGuests} />
+      <SeatingCanvas
+        initialTables={tables as any}
+        initialUnseated={unseatedGuests}
+        background={(wedding as any).seatingBackground ?? null}
+      />
     </div>
   );
 }

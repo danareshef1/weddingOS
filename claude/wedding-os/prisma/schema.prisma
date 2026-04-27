@@ -18,12 +18,19 @@ enum RsvpStatus {
   PENDING
   ACCEPTED
   DECLINED
+  MAYBE
 }
 
 enum Channel {
   SMS
   EMAIL
   WHATSAPP
+}
+
+enum TableShape {
+  ROUND
+  SQUARE
+  RECTANGLE
 }
 
 model Wedding {
@@ -53,10 +60,14 @@ model Wedding {
   vendors          Vendor[]
   galleryImages    GalleryImage[]
   documents        Document[]
+  todoItems        TodoItem[]
   messageTemplates MessageTemplate[]
+  messageSends     MessageSend[]
   faqs             FAQ[]
   timelineEvents   TimelineEvent[]
   scheduleItems    ScheduleItem[]
+  forecastBoards    ForecastBoard[]
+  seatingBackground String?
 }
 
 model User {
@@ -144,23 +155,28 @@ model Guest {
   plusOneName  String?
   plusOneMeal  String?
   songRequest String?
-  inviteCode  String?
-  respondedAt DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  inviteCode    String?
+  rsvpToken     String?   @unique
+  respondedAt   DateTime?
+  messageSentAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  messageLogs MessageLog[]
 
   @@index([weddingId])
   @@index([tableId])
 }
 
 model Table {
-  id        String  @id @default(cuid())
+  id        String     @id @default(cuid())
   weddingId String
-  wedding   Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  wedding   Wedding    @relation(fields: [weddingId], references: [id], onDelete: Cascade)
   name      String
-  capacity  Int     @default(10)
-  x         Float   @default(0)
-  y         Float   @default(0)
+  shape     TableShape @default(ROUND)
+  capacity  Int        @default(10)
+  x         Float      @default(0)
+  y         Float      @default(0)
 
   guests Guest[]
 
@@ -276,6 +292,17 @@ model Document {
   @@index([weddingId])
 }
 
+model TodoItem {
+  id        String   @id @default(cuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  title     String
+  status    String   @default("todo")
+  createdAt DateTime @default(now())
+
+  @@index([weddingId])
+}
+
 model ScheduleItem {
   id          String  @id @default(cuid())
   weddingId   String
@@ -286,4 +313,59 @@ model ScheduleItem {
   order       Int     @default(0)
 
   @@index([weddingId])
+}
+
+model ForecastBoard {
+  id        String         @id @default(cuid())
+  weddingId String
+  wedding   Wedding        @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  items     ForecastItem[]
+
+  @@index([weddingId])
+}
+
+model ForecastItem {
+  id            String        @id @default(cuid())
+  boardId       String
+  board         ForecastBoard @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  name          String
+  isVenue       Boolean       @default(false)
+  cost          Float         @default(0)
+  pricePerGuest Float         @default(0)
+  numGuests     Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([boardId])
+}
+
+model MessageSend {
+  id             String       @id @default(cuid())
+  weddingId      String
+  wedding        Wedding      @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  body           String       @db.Text
+  channel        Channel
+  recipientCount Int
+  sentAt         DateTime     @default(now())
+  logs           MessageLog[]
+
+  @@index([weddingId])
+}
+
+model MessageLog {
+  id            String      @id @default(cuid())
+  messageSendId String
+  messageSend   MessageSend @relation(fields: [messageSendId], references: [id], onDelete: Cascade)
+  guestId       String
+  guest         Guest       @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  status        String      @default("sent")
+  error         String?
+  sentAt        DateTime    @default(now())
+
+  @@index([messageSendId])
+  @@index([guestId])
 }

@@ -55,3 +55,14 @@ export async function moveTable(id: string, x: number, y: number) {
     data: { x, y },
   });
 }
+
+export async function updateSeatingBackground(url: string | null) {
+  const session = await requireCouple();
+
+  await prisma.wedding.update({
+    where: { id: session.user.weddingId! },
+    data: { seatingBackground: url } as any,
+  });
+
+  revalidatePath('/dashboard/seating');
+}

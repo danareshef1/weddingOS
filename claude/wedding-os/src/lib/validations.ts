@@ -79,6 +79,7 @@ export type VendorInput = z.infer<typeof vendorSchema>;
 
 export const tableSchema = z.object({
   name: z.string().min(1),
+  shape: z.enum(['ROUND', 'SQUARE', 'RECTANGLE']).default('ROUND'),
   capacity: z.number().min(1).max(20),
   x: z.number().optional(),
   y: z.number().optional(),

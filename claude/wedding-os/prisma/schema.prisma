@@ -219,6 +219,8 @@ model Vendor {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
+  scheduleItems ScheduleItem[]
+
   @@index([weddingId])
 }
 
@@ -308,11 +310,19 @@ model ScheduleItem {
   weddingId   String
   wedding     Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
   time        String
+  duration    Int     @default(60)
   title       String
   description String?
+  location    String?
+  category    String  @default("custom")
+  vendorId    String?
+  vendor      Vendor? @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  checklist   Json    @default("[]")
+  status      String  @default("pending")
   order       Int     @default(0)
 
   @@index([weddingId])
+  @@index([vendorId])
 }
 
 model ForecastBoard {

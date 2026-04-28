@@ -208,12 +208,28 @@ export function AddGuestDialog() {
             </legend>
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="group">{t('group')}</Label>
-                <Input
-                  id="group"
+                <Label>{t('group')}</Label>
+                <Select
                   value={form.group}
-                  onChange={(e) => update('group', e.target.value)}
-                />
+                  onValueChange={(v) => update('group', v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('selectGroup')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Groom's friends">{t('groomFriends')}</SelectItem>
+                    <SelectItem value="Bride's friends">{t('brideFriends')}</SelectItem>
+                    <SelectItem value="Groom's family">{t('groomFamily')}</SelectItem>
+                    <SelectItem value="Bride's family">{t('brideFamily')}</SelectItem>
+                    <SelectItem value="Groom's parents' friends">{t('groomParentsFriends')}</SelectItem>
+                    <SelectItem value="Bride's parents' friends">{t('brideParentsFriends')}</SelectItem>
+                    <SelectItem value="Groom's parents' work">{t('groomParentsWork')}</SelectItem>
+                    <SelectItem value="Bride's parents' work">{t('brideParentsWork')}</SelectItem>
+                    <SelectItem value="Groom's work">{t('groomWork')}</SelectItem>
+                    <SelectItem value="Bride's work">{t('brideWork')}</SelectItem>
+                    <SelectItem value="Other">{t('other')}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-1.5">
                 <Label>{t('rsvpStatus')}</Label>

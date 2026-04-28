@@ -18,6 +18,10 @@ import {
   Home,
   Globe,
   Heart,
+  CheckSquare,
+  BarChart3,
+  Sparkles,
+  CalendarClock,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
@@ -40,9 +44,13 @@ export function DashboardSidebar() {
     { href: `/${locale}/dashboard/guests`, label: t('guests'), icon: Users },
     { href: `/${locale}/dashboard/seating`, label: t('seating'), icon: Armchair },
     { href: `/${locale}/dashboard/budget`, label: t('budget'), icon: Wallet },
+    { href: `/${locale}/dashboard/budget-forecast`, label: t('budgetForecast'), icon: BarChart3 },
     { href: `/${locale}/dashboard/vendors`, label: t('vendors'), icon: Store },
     { href: `/${locale}/dashboard/documents`, label: t('documents'), icon: FolderOpen },
+    { href: `/${locale}/dashboard/todos`, label: t('todos'), icon: CheckSquare },
     { href: `/${locale}/dashboard/messages`, label: t('messages'), icon: MessageSquare },
+    { href: `/${locale}/dashboard/ai-planner`, label: t('aiPlanner'), icon: Sparkles },
+    { href: `/${locale}/dashboard/schedule`, label: t('schedule'), icon: CalendarClock },
     { href: `/${locale}/dashboard/settings`, label: t('settings'), icon: Settings },
   ];
 

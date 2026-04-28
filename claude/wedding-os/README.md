@@ -20,9 +20,12 @@ A full-featured, bilingual wedding planning platform built with Next.js 14. Desi
 ### Dashboard (Couple/Admin)
 - **Overview** — RSVP stats and budget summary at a glance
 - **Guests** — Full guest list management with CSV import/export, RSVP tracking, meal choices, plus-ones, and song requests
-- **Seating** — Visual drag-and-drop seating canvas with auto-seating algorithm
+- **Seating** — Visual canvas with SVG-rendered round, square, and rectangle tables; seat dot indicators (filled/empty); drag tables to reposition; drag guests from unseated panel to tables; upload a floor plan sketch as background or build your own
 - **Budget** — Budget tracking by category; actual, paid, and deposit amounts; venue cost calculator with extra hours/persons
+- **Budget Forecast** — Create and compare multiple budget scenarios side by side
 - **Vendors** — Vendor contacts, status tracking, and payment management
+- **Documents** — Upload, categorize, and delete files (contracts, invoices, receipts, etc.)
+- **To-Do List** — Task management with todo / in-progress / done states
 - **Gallery** — Image upload and management (approval/public flags)
 - **Messages** — Pre-built message templates for SMS, Email, and WhatsApp
 - **Settings** — Wedding details: couple names, date, venue, locale, theme
@@ -85,7 +88,8 @@ src/
 - **Wedding** — Core entity: couple info, venue, dates, settings
 - **User** — Auth with roles (COUPLE, ADMIN, GUEST, VENDOR)
 - **Guest** — RSVP, meal choice, plus-one, song requests
-- **Table** — Seating layout with X/Y canvas coordinates
+- **Table** — Seating layout with shape (ROUND/SQUARE/RECTANGLE), capacity, and X/Y canvas coordinates
+- **Document** — Uploaded files with category, notes, and file metadata
 - **BudgetItem** — Per-category budget with actual/paid/deposit tracking
 - **Vendor** — Contact info, status, and payment tracking
 - **GalleryImage** — Photos with approval and public flags
@@ -189,9 +193,12 @@ npx prisma studio # Open Prisma database GUI
 | Dashboard layout and navigation | Done |
 | Guest management (list, add, edit, CSV import/export) | Done |
 | RSVP flow (invite codes, meal choice, plus-ones) | Done |
-| Seating chart (drag-and-drop canvas, auto-seat algorithm) | Done |
+| Seating chart (visual shapes, seat indicators, sketch upload, drag & drop) | Done |
 | Budget tracker (categories, venue calculator, totals) | Done |
+| Budget forecast (multi-scenario comparison) | Done |
 | Vendor management | Done |
+| Documents (upload, categorize, delete) | Done |
+| To-Do list (todo / in-progress / done) | Done |
 | Gallery (upload, approve, public toggle) | Done |
 | Message templates (SMS/Email/WhatsApp) | Done |
 | Settings (wedding details, locale, theme) | Done |

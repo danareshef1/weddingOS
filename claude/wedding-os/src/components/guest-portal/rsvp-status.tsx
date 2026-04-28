@@ -8,12 +8,14 @@ const statusColors = {
   ACCEPTED: 'success' as const,
   DECLINED: 'destructive' as const,
   PENDING: 'warning' as const,
+  MAYBE: 'warning' as const,
 };
 
 const statusLabels = {
   ACCEPTED: 'Accepted',
   DECLINED: 'Declined',
   PENDING: 'Pending',
+  MAYBE: 'Maybe',
 };
 
 export function RsvpStatus({ guest }: { guest: Guest }) {

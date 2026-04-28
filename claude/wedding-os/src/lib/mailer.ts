@@ -1,5 +1,56 @@
 import nodemailer from 'nodemailer';
 
+function createTransporter() {
+  return nodemailer.createTransport({
+    host: process.env.EMAIL_SERVER_HOST,
+    port: Number(process.env.EMAIL_SERVER_PORT) || 587,
+    auth: {
+      user: process.env.EMAIL_SERVER_USER,
+      pass: process.env.EMAIL_SERVER_PASSWORD,
+    },
+  });
+}
+
+function hasSmtpConfig() {
+  return !!(process.env.EMAIL_SERVER_HOST && process.env.EMAIL_SERVER_HOST !== 'smtp.example.com');
+}
+
+export async function sendRsvpEmail(
+  to: string,
+  guestName: string,
+  body: string,
+  subject: string = 'Wedding RSVP'
+) {
+  const isDev = process.env.NODE_ENV !== 'production';
+
+  if (isDev && !hasSmtpConfig()) {
+    console.log('\n--- RSVP EMAIL (dev mode) ---');
+    console.log(`To: ${to} (${guestName})`);
+    console.log(`Subject: ${subject}`);
+    console.log(`Body:\n${body}`);
+    console.log('-----------------------------\n');
+    return;
+  }
+
+  const htmlBody = body.replace(/\n/g, '<br>').replace(
+    /(https?:\/\/[^\s]+)/g,
+    '<a href="$1" style="color:#e11d48;">$1</a>'
+  );
+
+  await createTransporter().sendMail({
+    from: process.env.EMAIL_FROM || 'noreply@wedding-os.com',
+    to,
+    subject,
+    text: body,
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px;">
+        <h2 style="color:#e11d48;margin-bottom:16px;">Wedding Invitation</h2>
+        <p style="line-height:1.6;color:#374151;">${htmlBody}</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendVerificationEmail(email: string, token: string) {
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
   const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}`;

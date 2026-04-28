@@ -4,6 +4,91 @@ Tasks to execute, each written as a self-contained prompt.
 
 ---
 
+## Mission 3 — Advanced Wedding Schedule Management
+
+Build a complete, interactive wedding-day schedule system inside the dashboard.
+
+**Core Timeline**
+- A visual day-of timeline showing every key moment: photographer arrival, makeup artist, bride/groom first look, ceremony start, cocktail hour, reception flow, cake cutting, first dance, and more.
+- Each timeline item has: time, title, description, location, assigned vendor/person, and category (vendor arrival, ceremony, reception, photo, personal, custom).
+- Users can manually add any custom task, vendor arrival, or event to the timeline.
+- **Drag-and-drop editor** — reorder or reschedule items by dragging them on the timeline.
+
+**Vendor Integration**
+- Link timeline items to vendors already in the vendors tab.
+- **Quick contact actions** on each item: one-tap Call, WhatsApp, or Email the linked vendor.
+- Show payment status and due date for each vendor inline on the timeline.
+
+**Smart Features**
+- **Buffer time suggestions** — warn when two consecutive items have no gap between them.
+- **Checklist per item** — attach a mini-checklist of things that must be ready before each step (e.g. "bouquet ready", "DJ briefed").
+- **Automatic reminders** — set a reminder time before each item; the platform sends an in-app notification (or email) when the time approaches.
+- **Real-time notifications** — if a task is marked as delayed or updated, notify linked collaborators.
+
+**Collaboration**
+- **Shared access** — invite planners, family members, or vendors to view (or edit) the timeline via a share link or invite code.
+- Collaborators see the same live timeline; changes sync in real time.
+
+**Day-of Live Mode**
+- A full-screen "live mode" view that shows:
+  - Current time
+  - The currently active task (highlighted)
+  - Countdown to the next task
+  - A scrollable list of remaining items
+- Accessible from a prominent "Go Live" button on the timeline page.
+
+**Export**
+- **Printable / shareable PDF** — generate a clean, formatted wedding day schedule PDF the couple can print or share with vendors.
+
+**AI Upgrades**
+- Suggest an ideal timeline based on wedding type, guest count, and venue.
+- Detect schedule conflicts (overlapping times, same vendor in two places).
+- Recommend best time slots for photos, ceremony, and dinner based on sunset/season.
+- Warn if a time gap is too tight or a section is unrealistically short.
+
+**Tech notes**
+- Extend the existing `ScheduleItem` Prisma model or create a richer `TimelineEvent` model with all new fields (vendorId, location, category, checklist, reminderMinutes, status).
+- Add a `/dashboard/schedule` page (or enhance the existing one if it exists).
+- Use `@dnd-kit` for drag-and-drop reordering (already in the stack).
+- PDF generation via `@react-pdf/renderer` or similar.
+- Real-time sync via polling or Server-Sent Events.
+- Follow the existing dashboard layout, sidebar, and i18n patterns (en + he).
+- Add a "Schedule" entry to the sidebar if not already present.
+
+---
+
+## Mission 2 — AI Wedding Planner
+
+Build an intelligent in-platform assistant that helps couples plan every part of their wedding. The assistant lives inside the dashboard as a dedicated chat interface.
+
+**Core Concept**
+The AI knows the couple's full wedding context: their guest count, budget items, vendors, seating plan, to-do list, timeline, and wedding date. It uses this live data to give personalized, actionable advice — not generic responses.
+
+**Example queries the assistant must handle well:**
+- "Build me a budget for a 400-guest wedding in Beersheba"
+- "Suggest a full wedding day timeline"
+- "Which vendors am I still missing?"
+- "How much alcohol should I order?"
+- "How many tables do I need?"
+- "What should I be doing 3 months before the wedding?"
+
+**Features**
+- **Chat UI** — A clean chat interface inside the dashboard (message bubbles, input box, send button). Persists conversation history for the session.
+- **Live context injection** — Before each request, pull the couple's current data (guest count, RSVP breakdown, tables, budget totals, vendor list, to-do items, wedding date/venue) and inject it as system context so the AI answers relative to their actual wedding.
+- **Structured action suggestions** — When the AI recommends something actionable (e.g. add a vendor, set a budget line), it can optionally return a suggestion chip the user can click to execute directly.
+- **Streaming responses** — Stream the AI reply token-by-token for a smooth UX.
+- **Hebrew + English** — Detect or follow the user's current locale and respond in the same language.
+
+**Tech notes**
+- Use the Anthropic Claude API (claude-sonnet-4-6 or latest available) via the `@anthropic-ai/sdk` package.
+- Add a `/api/ai/chat` route that accepts `{ messages, locale }` and streams back the response.
+- The system prompt must include injected live wedding data fetched server-side.
+- Add an "AI Planner" entry to the dashboard sidebar nav with a sparkle/wand icon.
+- Follow the existing dashboard layout, sidebar, and i18n patterns (en + he).
+- Store the API key in `.env` as `ANTHROPIC_API_KEY`.
+
+---
+
 ## Mission 1 — Seating Tab
 
 Build a full **Seating** tab in the wedding-os dashboard. The feature works as follows:

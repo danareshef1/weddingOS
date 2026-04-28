@@ -15,6 +15,7 @@ const statusColors = {
   ACCEPTED: 'success' as const,
   DECLINED: 'destructive' as const,
   PENDING: 'warning' as const,
+  MAYBE: 'warning' as const,
 };
 
 export function GuestTable({ guests }: { guests: GuestWithTable[] }) {

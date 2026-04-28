@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"require\\('@anthropic-ai/sdk'\\); console.log\\('ok'\\)\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(npm run *)"
+    ],
+    "additionalDirectories": [
+      "/Users/danareshef/claude/wedding-os/src/app/[locale]/dashboard"
+    ]
+  }
+}

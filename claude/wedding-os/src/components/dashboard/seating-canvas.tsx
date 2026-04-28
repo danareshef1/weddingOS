@@ -296,9 +296,35 @@ function VisualTable({
 
 // ─── Unseated panel ───────────────────────────────────────────────────────────
 
+const CATEGORY_ORDER = [
+  "Groom's friends",
+  "Bride's friends",
+  "Groom's family",
+  "Bride's family",
+  "Groom's parents' friends",
+  "Bride's parents' friends",
+  "Groom's parents' work",
+  "Bride's parents' work",
+  "Groom's work",
+  "Bride's work",
+  "Other",
+];
+
 function UnseatedPanel({ guests }: { guests: Guest[] }) {
   const { setNodeRef, isOver } = useDroppable({ id: 'unseated' });
   const t = useTranslations('dashboard');
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+  const grouped = CATEGORY_ORDER.reduce<Record<string, Guest[]>>((acc, cat) => {
+    acc[cat] = [];
+    return acc;
+  }, {});
+  for (const g of guests) {
+    const key = g.group && CATEGORY_ORDER.includes(g.group) ? g.group : 'Other';
+    grouped[key].push(g);
+  }
+
+  const nonEmptyCategories = CATEGORY_ORDER.filter((c) => grouped[c].length > 0);
 
   return (
     <div
@@ -314,10 +340,32 @@ function UnseatedPanel({ guests }: { guests: Guest[] }) {
       {guests.length === 0 ? (
         <p className="pt-4 text-center text-[11px] text-gray-400">{t('seatingAllSeated')} 🎉</p>
       ) : (
-        <div className="flex flex-col gap-1">
-          {guests.map((g) => (
-            <GuestChip key={g.id} guest={g} />
-          ))}
+        <div className="flex flex-col gap-2">
+          {nonEmptyCategories.map((cat) => {
+            const catGuests = grouped[cat];
+            const isCollapsed = collapsed[cat];
+            return (
+              <div key={cat}>
+                <button
+                  type="button"
+                  onClick={() => setCollapsed((prev) => ({ ...prev, [cat]: !prev[cat] }))}
+                  className="flex w-full items-center justify-between rounded px-1 py-0.5 text-[10px] font-semibold text-gray-500 hover:bg-gray-50 transition-colors"
+                >
+                  <span className="truncate text-start">{cat}</span>
+                  <span className="ml-1 shrink-0 text-gray-400">
+                    {catGuests.length} {isCollapsed ? '▸' : '▾'}
+                  </span>
+                </button>
+                {!isCollapsed && (
+                  <div className="mt-0.5 flex flex-col gap-0.5 ps-1">
+                    {catGuests.map((g) => (
+                      <GuestChip key={g.id} guest={g} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

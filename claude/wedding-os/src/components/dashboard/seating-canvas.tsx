@@ -13,8 +13,7 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { cn } from '@/lib/utils';
-import { assignGuestToTable } from '@/actions/guests';
-import { createTable, deleteTable, moveTable, updateSeatingBackground } from '@/actions/seating';
+import { assignSeatToTable, createTable, deleteTable, moveTable, updateSeatingBackground } from '@/actions/seating';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,16 +26,55 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Trash2, Plus, Upload, ImageOff, X } from 'lucide-react';
-import type { Guest, Table } from '@prisma/client';
 import { useTranslations } from 'next-intl';
 
-type TableShape = 'ROUND' | 'SQUARE' | 'RECTANGLE';
-type TableWithGuests = Table & { guests: Guest[]; shape: TableShape };
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-// ─── Dimensions per shape ────────────────────────────────────────────────────
+type TableShape = 'ROUND' | 'SQUARE' | 'RECTANGLE';
+
+type SeatGuest = {
+  id: string;
+  guestType: string;
+  firstName: string;
+  lastName: string;
+  group: string | null;
+};
+
+type SeatUnit = {
+  id: string;         // GuestSeat.id — used as DnD id
+  guestId: string;
+  seatIndex: number;
+  guest: SeatGuest;
+  tableId: string | null;
+};
+
+type TableWithSeats = {
+  id: string;
+  weddingId: string;
+  name: string;
+  shape: TableShape;
+  capacity: number;
+  x: number;
+  y: number;
+  guestSeats: SeatUnit[];
+};
+
+// ─── Display name ─────────────────────────────────────────────────────────────
+
+function seatLabel(seat: SeatUnit): string {
+  const { guest, seatIndex } = seat;
+  if (guest.guestType === 'FAMILY') {
+    return `${guest.lastName} ${seatIndex + 1}`;
+  }
+  const base = [guest.firstName, guest.lastName].filter(Boolean).join(' ');
+  return seatIndex === 0 ? base : `${base} +${seatIndex}`;
+}
+
+// ─── Dimensions per shape ─────────────────────────────────────────────────────
+
 const DIMS: Record<TableShape, { w: number; h: number }> = {
-  ROUND: { w: 200, h: 200 },
-  SQUARE: { w: 180, h: 180 },
+  ROUND:     { w: 200, h: 200 },
+  SQUARE:    { w: 180, h: 180 },
   RECTANGLE: { w: 250, h: 160 },
 };
 
@@ -62,49 +100,27 @@ function getRectSeats(n: number, x1: number, y1: number, x2: number, y2: number)
   });
 }
 
-// ─── Table SVG (shape + seat dots) ───────────────────────────────────────────
+// ─── Table SVG ────────────────────────────────────────────────────────────────
 
 function TableSVG({
-  shape,
-  W,
-  H,
-  seated,
-  capacity,
-  isOver,
+  shape, W, H, seated, capacity, isOver,
 }: {
-  shape: TableShape;
-  W: number;
-  H: number;
-  seated: number;
-  capacity: number;
-  isOver: boolean;
+  shape: TableShape; W: number; H: number; seated: number; capacity: number; isOver: boolean;
 }) {
   const stroke = isOver ? '#f43f5e' : '#d1d5db';
-  const fill = isOver ? '#fff1f2' : '#ffffff';
+  const fill   = isOver ? '#fff1f2' : '#ffffff';
 
   if (shape === 'ROUND') {
-    const cx = W / 2;
-    const cy = H / 2;
+    const cx = W / 2, cy = H / 2;
     const tableR = Math.min(W, H) / 2 - 22;
-    const seatR = tableR + 14;
-    const seats = getRoundSeats(capacity, cx, cy, seatR);
+    const seatR  = tableR + 14;
+    const seats  = getRoundSeats(capacity, cx, cy, seatR);
     return (
-      <svg
-        width={W}
-        height={H}
-        style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
-      >
+      <svg width={W} height={H} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
         <circle cx={cx} cy={cy} r={tableR} fill={fill} stroke={stroke} strokeWidth={2.5} />
         {seats.map((s, i) => (
-          <circle
-            key={i}
-            cx={s.x}
-            cy={s.y}
-            r={7}
-            fill={i < seated ? '#f43f5e' : '#e5e7eb'}
-            stroke="white"
-            strokeWidth={1.5}
-          />
+          <circle key={i} cx={s.x} cy={s.y} r={7}
+            fill={i < seated ? '#f43f5e' : '#e5e7eb'} stroke="white" strokeWidth={1.5} />
         ))}
       </svg>
     );
@@ -114,48 +130,22 @@ function TableSVG({
   const x1 = margin, y1 = margin, x2 = W - margin, y2 = H - margin;
   const seats = getRectSeats(capacity, x1, y1, x2, y2);
   return (
-    <svg
-      width={W}
-      height={H}
-      style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
-    >
-      <rect
-        x={x1}
-        y={y1}
-        width={x2 - x1}
-        height={y2 - y1}
-        rx={8}
-        fill={fill}
-        stroke={stroke}
-        strokeWidth={2.5}
-      />
+    <svg width={W} height={H} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+      <rect x={x1} y={y1} width={x2 - x1} height={y2 - y1} rx={8}
+        fill={fill} stroke={stroke} strokeWidth={2.5} />
       {seats.map((s, i) => (
-        <circle
-          key={i}
-          cx={s.x}
-          cy={s.y}
-          r={7}
-          fill={i < seated ? '#f43f5e' : '#e5e7eb'}
-          stroke="white"
-          strokeWidth={1.5}
-        />
+        <circle key={i} cx={s.x} cy={s.y} r={7}
+          fill={i < seated ? '#f43f5e' : '#e5e7eb'} stroke="white" strokeWidth={1.5} />
       ))}
     </svg>
   );
 }
 
-// ─── Guest chip ───────────────────────────────────────────────────────────────
+// ─── Seat chip ────────────────────────────────────────────────────────────────
 
-function GuestChip({
-  guest,
-  onRemove,
-}: {
-  guest: Guest;
-  onRemove?: () => void;
-}) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: guest.id,
-  });
+function SeatChip({ seat, onRemove }: { seat: SeatUnit; onRemove?: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: seat.id });
+  const isFamily = seat.guest.guestType === 'FAMILY';
 
   return (
     <div
@@ -164,26 +154,20 @@ function GuestChip({
       {...attributes}
       data-guest="true"
       className={cn(
-        'flex items-center gap-1 rounded bg-rose-50 px-1.5 py-0.5 text-[10px] text-rose-800 cursor-grab select-none',
+        'flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] cursor-grab select-none',
+        isFamily
+          ? 'bg-violet-50 text-violet-800'
+          : 'bg-rose-50 text-rose-800',
         isDragging && 'opacity-40',
       )}
-      style={{
-        transform: transform
-          ? `translate(${transform.x}px, ${transform.y}px)`
-          : undefined,
-      }}
+      style={{ transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined }}
     >
-      <span className="truncate max-w-[90px]">
-        {guest.firstName} {guest.lastName}
-      </span>
+      <span className="truncate max-w-[90px]">{seatLabel(seat)}</span>
       {onRemove && (
         <button
           data-action="true"
           onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
           className="shrink-0 hover:text-red-600 transition-colors"
         >
           <X className="h-2.5 w-2.5" />
@@ -196,25 +180,19 @@ function GuestChip({
 // ─── Visual table on canvas ───────────────────────────────────────────────────
 
 function VisualTable({
-  table,
-  onDelete,
-  onRemoveGuest,
+  table, onDelete, onRemoveSeat,
 }: {
-  table: TableWithGuests;
+  table: TableWithSeats;
   onDelete: () => void;
-  onRemoveGuest: (guestId: string) => void;
+  onRemoveSeat: (seatId: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: table.id });
   const [pos, setPos] = useState({ x: table.x, y: table.y });
-  const dragRef = useRef<{
-    sx: number;
-    sy: number;
-    ox: number;
-    oy: number;
-  } | null>(null);
+  const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number } | null>(null);
 
   const { w: W, h: H } = DIMS[table.shape];
-  const seated = table.guests.length;
+  const seated = table.guestSeats.length;
+  const maxVisible = table.shape === 'RECTANGLE' ? 4 : 3;
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).closest('[data-guest]')) return;
@@ -238,7 +216,6 @@ function VisualTable({
   };
 
   const contentInset = table.shape === 'ROUND' ? 38 : 28;
-  const maxGuests = table.shape === 'RECTANGLE' ? 4 : 3;
 
   return (
     <div
@@ -249,16 +226,8 @@ function VisualTable({
       className="absolute cursor-grab active:cursor-grabbing select-none"
       style={{ left: pos.x, top: pos.y, width: W, height: H }}
     >
-      <TableSVG
-        shape={table.shape}
-        W={W}
-        H={H}
-        seated={seated}
-        capacity={table.capacity}
-        isOver={isOver}
-      />
+      <TableSVG shape={table.shape} W={W} H={H} seated={seated} capacity={table.capacity} isOver={isOver} />
 
-      {/* Content overlay */}
       <div
         className="absolute flex flex-col items-center justify-center gap-0.5 overflow-hidden pointer-events-none"
         style={{ inset: contentInset }}
@@ -270,18 +239,17 @@ function VisualTable({
           {seated}/{table.capacity}
         </Badge>
         <div className="flex flex-col gap-0.5 w-full items-center mt-0.5 pointer-events-auto">
-          {table.guests.slice(0, maxGuests).map((g) => (
-            <GuestChip key={g.id} guest={g} onRemove={() => onRemoveGuest(g.id)} />
+          {table.guestSeats.slice(0, maxVisible).map((s) => (
+            <SeatChip key={s.id} seat={s} onRemove={() => onRemoveSeat(s.id)} />
           ))}
-          {table.guests.length > maxGuests && (
+          {table.guestSeats.length > maxVisible && (
             <span className="text-[9px] text-gray-400">
-              +{table.guests.length - maxGuests} more
+              +{table.guestSeats.length - maxVisible} more
             </span>
           )}
         </div>
       </div>
 
-      {/* Delete button */}
       <button
         data-action="true"
         onPointerDown={(e) => e.stopPropagation()}
@@ -310,21 +278,20 @@ const CATEGORY_ORDER = [
   "Other",
 ];
 
-function UnseatedPanel({ guests }: { guests: Guest[] }) {
+function UnseatedPanel({ seats }: { seats: SeatUnit[] }) {
   const { setNodeRef, isOver } = useDroppable({ id: 'unseated' });
   const t = useTranslations('dashboard');
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
-  const grouped = CATEGORY_ORDER.reduce<Record<string, Guest[]>>((acc, cat) => {
+  const grouped = CATEGORY_ORDER.reduce<Record<string, SeatUnit[]>>((acc, cat) => {
     acc[cat] = [];
     return acc;
   }, {});
-  for (const g of guests) {
-    const key = g.group && CATEGORY_ORDER.includes(g.group) ? g.group : 'Other';
-    grouped[key].push(g);
+  for (const s of seats) {
+    const key = s.guest.group && CATEGORY_ORDER.includes(s.guest.group) ? s.guest.group : 'Other';
+    grouped[key].push(s);
   }
-
-  const nonEmptyCategories = CATEGORY_ORDER.filter((c) => grouped[c].length > 0);
+  const nonEmpty = CATEGORY_ORDER.filter((c) => grouped[c].length > 0);
 
   return (
     <div
@@ -335,32 +302,30 @@ function UnseatedPanel({ guests }: { guests: Guest[] }) {
       )}
     >
       <h3 className="mb-2 text-xs font-semibold text-gray-600">
-        {t('seatingUnseated')} ({guests.length})
+        {t('seatingUnseated')} ({seats.length})
       </h3>
-      {guests.length === 0 ? (
+      {seats.length === 0 ? (
         <p className="pt-4 text-center text-[11px] text-gray-400">{t('seatingAllSeated')} 🎉</p>
       ) : (
         <div className="flex flex-col gap-2">
-          {nonEmptyCategories.map((cat) => {
-            const catGuests = grouped[cat];
+          {nonEmpty.map((cat) => {
+            const catSeats = grouped[cat];
             const isCollapsed = collapsed[cat];
             return (
               <div key={cat}>
                 <button
                   type="button"
-                  onClick={() => setCollapsed((prev) => ({ ...prev, [cat]: !prev[cat] }))}
+                  onClick={() => setCollapsed((p) => ({ ...p, [cat]: !p[cat] }))}
                   className="flex w-full items-center justify-between rounded px-1 py-0.5 text-[10px] font-semibold text-gray-500 hover:bg-gray-50 transition-colors"
                 >
                   <span className="truncate text-start">{cat}</span>
                   <span className="ml-1 shrink-0 text-gray-400">
-                    {catGuests.length} {isCollapsed ? '▸' : '▾'}
+                    {catSeats.length} {isCollapsed ? '▸' : '▾'}
                   </span>
                 </button>
                 {!isCollapsed && (
                   <div className="mt-0.5 flex flex-col gap-0.5 ps-1">
-                    {catGuests.map((g) => (
-                      <GuestChip key={g.id} guest={g} />
-                    ))}
+                    {catSeats.map((s) => <SeatChip key={s.id} seat={s} />)}
                   </div>
                 )}
               </div>
@@ -375,20 +340,16 @@ function UnseatedPanel({ guests }: { guests: Guest[] }) {
 // ─── Shape icon ───────────────────────────────────────────────────────────────
 
 function ShapeIcon({ shape }: { shape: TableShape }) {
-  if (shape === 'ROUND') {
-    return (
-      <svg width="28" height="28" viewBox="0 0 28 28" className="mx-auto">
-        <circle cx="14" cy="14" r="11" fill="none" stroke="currentColor" strokeWidth="2" />
-      </svg>
-    );
-  }
-  if (shape === 'SQUARE') {
-    return (
-      <svg width="28" height="28" viewBox="0 0 28 28" className="mx-auto">
-        <rect x="3" y="3" width="22" height="22" rx="2" fill="none" stroke="currentColor" strokeWidth="2" />
-      </svg>
-    );
-  }
+  if (shape === 'ROUND') return (
+    <svg width="28" height="28" viewBox="0 0 28 28" className="mx-auto">
+      <circle cx="14" cy="14" r="11" fill="none" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
+  if (shape === 'SQUARE') return (
+    <svg width="28" height="28" viewBox="0 0 28 28" className="mx-auto">
+      <rect x="3" y="3" width="22" height="22" rx="2" fill="none" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
   return (
     <svg width="36" height="24" viewBox="0 0 48 28" className="mx-auto">
       <rect x="2" y="4" width="44" height="20" rx="2" fill="none" stroke="currentColor" strokeWidth="2" />
@@ -398,11 +359,7 @@ function ShapeIcon({ shape }: { shape: TableShape }) {
 
 // ─── Add table dialog ─────────────────────────────────────────────────────────
 
-function AddTableDialog({
-  onAdd,
-}: {
-  onAdd: (name: string, shape: TableShape, capacity: number) => void;
-}) {
+function AddTableDialog({ onAdd }: { onAdd: (name: string, shape: TableShape, capacity: number) => void }) {
   const t = useTranslations('dashboard');
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
@@ -411,9 +368,7 @@ function AddTableDialog({
 
   const shapes: TableShape[] = ['ROUND', 'SQUARE', 'RECTANGLE'];
   const shapeLabel: Record<TableShape, string> = {
-    ROUND: t('seatingRound'),
-    SQUARE: t('seatingSquare'),
-    RECTANGLE: t('seatingRectangle'),
+    ROUND: t('seatingRound'), SQUARE: t('seatingSquare'), RECTANGLE: t('seatingRectangle'),
   };
 
   const handleAdd = () => {
@@ -434,10 +389,7 @@ function AddTableDialog({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>{t('addTable')}</DialogTitle>
-          </DialogHeader>
-
+          <DialogHeader><DialogTitle>{t('addTable')}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
               <Label>{t('seatingTableName')}</Label>
@@ -448,20 +400,15 @@ function AddTableDialog({
                 onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
               />
             </div>
-
             <div className="space-y-1.5">
               <Label>{t('seatingShape')}</Label>
               <div className="flex gap-2">
                 {shapes.map((s) => (
                   <button
-                    key={s}
-                    type="button"
-                    onClick={() => setShape(s)}
+                    key={s} type="button" onClick={() => setShape(s)}
                     className={cn(
                       'flex flex-1 flex-col items-center rounded-lg border-2 py-2 text-[11px] font-medium transition-colors',
-                      shape === s
-                        ? 'border-rose-500 bg-rose-50 text-rose-700'
-                        : 'border-gray-200 text-gray-500 hover:border-gray-300',
+                      shape === s ? 'border-rose-500 bg-rose-50 text-rose-700' : 'border-gray-200 text-gray-500 hover:border-gray-300',
                     )}
                   >
                     <ShapeIcon shape={s} />
@@ -470,26 +417,17 @@ function AddTableDialog({
                 ))}
               </div>
             </div>
-
             <div className="space-y-1.5">
               <Label>{t('seatingChairs')}</Label>
               <Input
-                type="number"
-                min={1}
-                max={30}
-                value={capacity}
+                type="number" min={1} max={30} value={capacity}
                 onChange={(e) => setCapacity(Math.max(1, Math.min(30, Number(e.target.value))))}
               />
             </div>
           </div>
-
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              {t('cancel')}
-            </Button>
-            <Button onClick={handleAdd} disabled={!name.trim()}>
-              {t('addTable')}
-            </Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>{t('cancel')}</Button>
+            <Button onClick={handleAdd} disabled={!name.trim()}>{t('addTable')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -500,9 +438,7 @@ function AddTableDialog({
 // ─── Background panel ─────────────────────────────────────────────────────────
 
 function BackgroundPanel({
-  background,
-  onUpload,
-  onRemove,
+  background, onUpload, onRemove,
 }: {
   background: string | null;
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -522,47 +458,24 @@ function BackgroundPanel({
   return (
     <div className="rounded-lg border bg-white p-3 space-y-2">
       <span className="text-xs font-semibold text-gray-600">{t('seatingSketchBackground')}</span>
-
       {background ? (
         <div className="space-y-1.5">
-          <img
-            src={background}
-            alt="floor plan"
-            className="w-full rounded object-cover h-20"
-          />
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full h-7 text-xs text-red-500 hover:text-red-600"
-            onClick={onRemove}
-          >
+          <img src={background} alt="floor plan" className="w-full rounded object-cover h-20" />
+          <Button variant="ghost" size="sm" className="w-full h-7 text-xs text-red-500 hover:text-red-600" onClick={onRemove}>
             <ImageOff className="h-3 w-3 mr-1" />
             {t('seatingRemoveBackground')}
           </Button>
         </div>
       ) : (
         <>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full gap-1.5 text-xs"
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading}
-          >
+          <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs" onClick={() => fileRef.current?.click()} disabled={uploading}>
             <Upload className="h-3 w-3" />
             {uploading ? t('seatingUploading') : t('seatingUploadSketch')}
           </Button>
           <p className="text-center text-[10px] text-gray-400">{t('seatingBuildOwn')}</p>
         </>
       )}
-
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleChange}
-      />
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleChange} />
     </div>
   );
 }
@@ -574,63 +487,61 @@ export function SeatingCanvas({
   initialUnseated,
   background: initialBackground,
 }: {
-  initialTables: TableWithGuests[];
-  initialUnseated: Guest[];
+  initialTables: TableWithSeats[];
+  initialUnseated: SeatUnit[];
   background: string | null;
 }) {
-  const [tables, setTables] = useState<TableWithGuests[]>(initialTables);
-  const [unseated, setUnseated] = useState<Guest[]>(initialUnseated);
+  const [tables, setTables] = useState<TableWithSeats[]>(initialTables);
+  const [unseated, setUnseated] = useState<SeatUnit[]>(initialUnseated);
   const [background, setBackground] = useState<string | null>(initialBackground);
-  const [activeGuest, setActiveGuest] = useState<Guest | null>(null);
+  const [activeSeat, setActiveSeat] = useState<SeatUnit | null>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-  );
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
-  function findGuest(id: string): Guest | undefined {
-    const inUnseated = unseated.find((g) => g.id === id);
+  function findSeat(id: string): SeatUnit | undefined {
+    const inUnseated = unseated.find((s) => s.id === id);
     if (inUnseated) return inUnseated;
     for (const t of tables) {
-      const g = t.guests.find((g) => g.id === id);
-      if (g) return g;
+      const s = t.guestSeats.find((s) => s.id === id);
+      if (s) return s;
     }
   }
 
   function handleDragStart(event: DragStartEvent) {
-    setActiveGuest(findGuest(event.active.id as string) ?? null);
+    setActiveSeat(findSeat(event.active.id as string) ?? null);
   }
 
   function handleDragEnd(event: DragEndEvent) {
-    setActiveGuest(null);
+    setActiveSeat(null);
     const { active, over } = event;
     if (!over) return;
 
-    const guestId = active.id as string;
+    const seatId  = active.id as string;
     const targetId = over.id as string;
-    const guest = findGuest(guestId);
-    if (!guest) return;
+    const seat = findSeat(seatId);
+    if (!seat) return;
 
     if (targetId === 'unseated') {
       setTables((prev) =>
-        prev.map((t) => ({ ...t, guests: t.guests.filter((g) => g.id !== guestId) })),
+        prev.map((t) => ({ ...t, guestSeats: t.guestSeats.filter((s) => s.id !== seatId) })),
       );
-      setUnseated((prev) => (prev.some((g) => g.id === guestId) ? prev : [...prev, guest]));
-      assignGuestToTable(guestId, null);
+      setUnseated((prev) => prev.some((s) => s.id === seatId) ? prev : [...prev, seat]);
+      assignSeatToTable(seatId, null);
       return;
     }
 
     const target = tables.find((t) => t.id === targetId);
-    if (!target || target.guests.length >= target.capacity) return;
+    if (!target || target.guestSeats.length >= target.capacity) return;
 
     setTables((prev) =>
       prev.map((t) => {
         if (t.id === targetId)
-          return { ...t, guests: [...t.guests.filter((g) => g.id !== guestId), guest] };
-        return { ...t, guests: t.guests.filter((g) => g.id !== guestId) };
+          return { ...t, guestSeats: [...t.guestSeats.filter((s) => s.id !== seatId), seat] };
+        return { ...t, guestSeats: t.guestSeats.filter((s) => s.id !== seatId) };
       }),
     );
-    setUnseated((prev) => prev.filter((g) => g.id !== guestId));
-    assignGuestToTable(guestId, targetId);
+    setUnseated((prev) => prev.filter((s) => s.id !== seatId));
+    assignSeatToTable(seatId, targetId);
   }
 
   function handleAddTable(name: string, shape: TableShape, capacity: number) {
@@ -639,7 +550,7 @@ export function SeatingCanvas({
     createTable({ name, shape, capacity, x, y } as any).then((newTable) => {
       setTables((prev) => [
         ...prev,
-        { ...newTable, guests: [], shape: newTable.shape as TableShape },
+        { ...newTable, guestSeats: [], shape: newTable.shape as TableShape },
       ]);
     });
   }
@@ -649,20 +560,20 @@ export function SeatingCanvas({
     if (!table) return;
     setUnseated((prev) => [
       ...prev,
-      ...table.guests.filter((g) => !prev.some((u) => u.id === g.id)),
+      ...table.guestSeats.filter((s) => !prev.some((u) => u.id === s.id)),
     ]);
     setTables((prev) => prev.filter((t) => t.id !== tableId));
     deleteTable(tableId);
   }
 
-  function handleRemoveGuest(guestId: string) {
-    const guest = findGuest(guestId);
-    if (!guest) return;
+  function handleRemoveSeat(seatId: string) {
+    const seat = findSeat(seatId);
+    if (!seat) return;
     setTables((prev) =>
-      prev.map((t) => ({ ...t, guests: t.guests.filter((g) => g.id !== guestId) })),
+      prev.map((t) => ({ ...t, guestSeats: t.guestSeats.filter((s) => s.id !== seatId) })),
     );
-    setUnseated((prev) => (prev.some((g) => g.id === guestId) ? prev : [...prev, guest]));
-    assignGuestToTable(guestId, null);
+    setUnseated((prev) => prev.some((s) => s.id === seatId) ? prev : [...prev, seat]);
+    assignSeatToTable(seatId, null);
   }
 
   async function handleBackgroundUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -691,7 +602,7 @@ export function SeatingCanvas({
             onUpload={handleBackgroundUpload}
             onRemove={handleRemoveBackground}
           />
-          <UnseatedPanel guests={unseated} />
+          <UnseatedPanel seats={unseated} />
         </div>
 
         {/* Canvas */}
@@ -699,31 +610,17 @@ export function SeatingCanvas({
           className="relative flex-1 overflow-auto rounded-xl border-2 border-dashed border-gray-200"
           style={
             background
-              ? {
-                  backgroundImage: `url(${background})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
+              ? { backgroundImage: `url(${background})`, backgroundSize: 'cover', backgroundPosition: 'center' }
               : { backgroundColor: '#f9fafb' }
           }
         >
-          {tables.length === 0 && !background && (
-            <div className="pointer-events-none absolute inset-0 flex select-none items-center justify-center text-gray-300">
-              <div className="text-center">
-                <div className="mb-2 text-5xl">🪑</div>
-                <p className="text-sm">Add tables to start seating guests</p>
-              </div>
-            </div>
-          )}
-
-          {/* Inner scrollable area – large so tables can be placed anywhere */}
-          <div className="relative" style={{ minWidth: 1200, minHeight: 800 }}>
+          <div className="relative min-h-full min-w-full" style={{ height: 800, width: 1200 }}>
             {tables.map((table) => (
               <VisualTable
                 key={table.id}
                 table={table}
                 onDelete={() => handleDeleteTable(table.id)}
-                onRemoveGuest={handleRemoveGuest}
+                onRemoveSeat={handleRemoveSeat}
               />
             ))}
           </div>
@@ -731,9 +628,12 @@ export function SeatingCanvas({
       </div>
 
       <DragOverlay>
-        {activeGuest && (
-          <div className="rounded bg-rose-100 px-2 py-1 text-xs font-medium text-rose-800 shadow-lg">
-            {activeGuest.firstName} {activeGuest.lastName}
+        {activeSeat && (
+          <div className={cn(
+            'rounded px-2 py-1 text-[11px] font-medium shadow-lg',
+            activeSeat.guest.guestType === 'FAMILY' ? 'bg-violet-100 text-violet-800' : 'bg-rose-100 text-rose-800',
+          )}>
+            {seatLabel(activeSeat)}
           </div>
         )}
       </DragOverlay>

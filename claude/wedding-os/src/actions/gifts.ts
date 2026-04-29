@@ -88,8 +88,8 @@ export async function importGiftsFromGuests() {
     data: toImport.map((g) => ({
       weddingId,
       guestId: g.id,
-      guestName: `${g.firstName} ${g.lastName}`,
-      attendeeCount: g.plusOneName ? 2 : 1,
+      guestName: g.guestType === 'FAMILY' ? g.lastName : `${g.firstName} ${g.lastName}`.trim(),
+      attendeeCount: g.guestCount ?? 1,
       amount: 0,
       method: 'CASH' as const,
       status: 'PENDING' as const,

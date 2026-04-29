@@ -20,7 +20,7 @@ export default async function GiftsPage({
     prisma.guest.findMany({
       where: { weddingId, rsvpStatus: 'ACCEPTED' },
       orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
-      select: { id: true, firstName: true, lastName: true, plusOneName: true },
+      select: { id: true, firstName: true, lastName: true, guestType: true, guestCount: true },
     }),
     prisma.giftEntry.findMany({
       where: { weddingId, guestId: { not: null } },
@@ -37,8 +37,8 @@ export default async function GiftsPage({
       data: toCreate.map((g) => ({
         weddingId,
         guestId: g.id,
-        guestName: `${g.firstName} ${g.lastName}`,
-        attendeeCount: g.plusOneName ? 2 : 1,
+        guestName: g.guestType === 'FAMILY' ? g.lastName : `${g.firstName} ${g.lastName}`.trim(),
+        attendeeCount: (g as any).guestCount ?? 1,
         amount: 0,
         method: 'CASH' as const,
         status: 'PENDING' as const,

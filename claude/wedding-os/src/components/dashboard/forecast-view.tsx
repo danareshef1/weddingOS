@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import {
-  ArrowLeft, ArrowRight, Plus, Trash2, Pencil, Check, X,
+  ArrowLeft, ArrowRight, Plus, Trash2, Pencil, Check, X, Copy,
   Building2, Tag, Camera, Video, Music2, Flower2,
   Car, Sparkles, Scissors, ShoppingBag, Briefcase,
   UtensilsCrossed, Mail, Cake, Users, Loader2,
@@ -17,6 +17,7 @@ import {
   createForecastBoard,
   renameForecastBoard,
   deleteForecastBoard,
+  duplicateForecastBoard,
   addForecastItem,
   updateForecastItem,
   deleteForecastItem,
@@ -98,10 +99,12 @@ function BoardCard({
   board,
   onOpen,
   onDelete,
+  onDuplicate,
 }: {
   board: ForecastBoardData;
   onOpen: () => void;
   onDelete: () => void;
+  onDuplicate: () => void;
 }) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
@@ -115,14 +118,23 @@ function BoardCard({
       onClick={onOpen}
     >
       <CardContent className="p-5">
-        {/* Delete button — positioned in the logical end corner */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="absolute end-3 top-3 flex h-7 w-7 items-center justify-center rounded-lg text-gray-300 opacity-0 transition-opacity hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
-          title={t('fDeleteBoard')}
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
+        {/* Action buttons — top end corner */}
+        <div className="absolute end-3 top-3 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            onClick={(e) => { e.stopPropagation(); onDuplicate(); }}
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-300 hover:bg-blue-50 hover:text-blue-500"
+            title={t('fDuplicateBoard')}
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-300 hover:bg-red-50 hover:text-red-500"
+            title={t('fDeleteBoard')}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
 
         <p className="me-6 truncate font-semibold text-gray-900">{board.name}</p>
         <p className="mt-0.5 text-xs text-gray-400">
@@ -636,6 +648,25 @@ export function ForecastView({ boards: initialBoards }: { boards: ForecastBoardD
     await deleteForecastBoard(boardId);
   }
 
+  async function handleDuplicateBoard(boardId: string) {
+    const copy = await duplicateForecastBoard(boardId);
+    setBoards((prev) => [
+      ...prev,
+      {
+        id: copy.id,
+        name: copy.name,
+        items: copy.items.map((i) => ({
+          id: i.id,
+          name: i.name,
+          isVenue: i.isVenue,
+          cost: i.cost,
+          pricePerGuest: i.pricePerGuest,
+          numGuests: i.numGuests,
+        })),
+      },
+    ]);
+  }
+
   if (selectedBoard) {
     return (
       <BoardDetail
@@ -670,6 +701,7 @@ export function ForecastView({ boards: initialBoards }: { boards: ForecastBoardD
               board={board}
               onOpen={() => setSelectedBoardId(board.id)}
               onDelete={() => handleDeleteBoard(board.id)}
+              onDuplicate={() => handleDuplicateBoard(board.id)}
             />
           ))}
 

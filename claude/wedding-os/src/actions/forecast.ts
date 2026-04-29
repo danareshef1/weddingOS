@@ -42,6 +42,37 @@ export async function deleteForecastBoard(boardId: string) {
   revalidatePath('/dashboard/budget-forecast');
 }
 
+export async function duplicateForecastBoard(boardId: string) {
+  const session = await requireCouple();
+  const weddingId = session.user.weddingId;
+
+  const source = await prisma.forecastBoard.findFirst({
+    where: { id: boardId, weddingId },
+    include: { items: true },
+  });
+  if (!source) throw new Error('Board not found');
+
+  const copy = await prisma.forecastBoard.create({
+    data: {
+      weddingId,
+      name: `${source.name} (copy)`,
+      items: {
+        create: source.items.map((item) => ({
+          name: item.name,
+          isVenue: item.isVenue,
+          cost: item.cost,
+          pricePerGuest: item.pricePerGuest,
+          numGuests: item.numGuests,
+        })),
+      },
+    },
+    include: { items: { orderBy: { createdAt: 'asc' } } },
+  });
+
+  revalidatePath('/dashboard/budget-forecast');
+  return copy;
+}
+
 // ── Items ─────────────────────────────────────────────────────────────────────
 
 export async function addForecastItem(

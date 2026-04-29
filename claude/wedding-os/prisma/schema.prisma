@@ -155,11 +155,13 @@ model Guest {
   id          String     @id @default(cuid())
   weddingId   String
   wedding     Wedding    @relation(fields: [weddingId], references: [id], onDelete: Cascade)
-  firstName   String
+  guestType   String     @default("INDIVIDUAL")
+  firstName   String     @default("")
   lastName    String
   email       String?
   phone       String?
   group       String?
+  guestCount  Int        @default(1)
   tags        String[]   @default([])
   tableId     String?
   table       Table?     @relation(fields: [tableId], references: [id], onDelete: SetNull)
@@ -178,6 +180,7 @@ model Guest {
 
   messageLogs  MessageLog[]
   giftEntries  GiftEntry[]
+  guestSeats   GuestSeat[]
 
   @@index([weddingId])
   @@index([tableId])
@@ -193,9 +196,25 @@ model Table {
   x         Float      @default(0)
   y         Float      @default(0)
 
-  guests Guest[]
+  guests     Guest[]
+  guestSeats GuestSeat[]
 
   @@index([weddingId])
+}
+
+model GuestSeat {
+  id        String   @id @default(cuid())
+  weddingId String
+  guestId   String
+  guest     Guest    @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  seatIndex Int
+  tableId   String?
+  table     Table?   @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@unique([guestId, seatIndex])
+  @@index([weddingId])
+  @@index([tableId])
 }
 
 model BudgetItem {

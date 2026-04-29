@@ -15,19 +15,57 @@ export default async function SeatingPage({
   const t = await getTranslations('dashboard');
   const weddingId = session.user.weddingId!;
 
-  const [tables, unseatedGuests, wedding] = await Promise.all([
+  // Fetch all accepted guests to ensure GuestSeat records exist
+  const acceptedGuests = await prisma.guest.findMany({
+    where: { weddingId, rsvpStatus: 'ACCEPTED' },
+    select: { id: true, guestCount: true },
+  });
+
+  // Auto-create missing seat records (idempotent — @@unique prevents duplicates)
+  if (acceptedGuests.length > 0) {
+    await prisma.guestSeat.createMany({
+      data: acceptedGuests.flatMap((g) =>
+        Array.from({ length: Math.max(1, g.guestCount ?? 1) }, (_, i) => ({
+          weddingId,
+          guestId: g.id,
+          seatIndex: i,
+        }))
+      ),
+      skipDuplicates: true,
+    });
+  }
+
+  const seatInclude = {
+    include: {
+      guest: {
+        select: {
+          id: true,
+          guestType: true,
+          firstName: true,
+          lastName: true,
+          group: true,
+        },
+      },
+    },
+    orderBy: [{ seatIndex: 'asc' as const }],
+  };
+
+  const [tables, unseatedSeats, wedding] = await Promise.all([
     prisma.table.findMany({
       where: { weddingId },
-      include: { guests: true },
+      include: { guestSeats: seatInclude },
       orderBy: { name: 'asc' },
     }),
-    prisma.guest.findMany({
-      where: { weddingId, tableId: null, rsvpStatus: 'ACCEPTED' },
-      orderBy: [{ group: 'asc' }, { lastName: 'asc' }],
+    prisma.guestSeat.findMany({
+      where: { weddingId, tableId: null },
+      include: {
+        guest: {
+          select: { id: true, guestType: true, firstName: true, lastName: true, group: true },
+        },
+      },
+      orderBy: [{ guest: { group: 'asc' } }, { guest: { lastName: 'asc' } }, { seatIndex: 'asc' }],
     }),
-    prisma.wedding.findUniqueOrThrow({
-      where: { id: weddingId },
-    }),
+    prisma.wedding.findUniqueOrThrow({ where: { id: weddingId } }),
   ]);
 
   return (
@@ -36,7 +74,7 @@ export default async function SeatingPage({
 
       <SeatingCanvas
         initialTables={tables as any}
-        initialUnseated={unseatedGuests}
+        initialUnseated={unseatedSeats as any}
         background={(wedding as any).seatingBackground ?? null}
       />
     </div>

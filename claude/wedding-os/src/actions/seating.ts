@@ -34,17 +34,40 @@ export async function updateTable(id: string, data: Partial<TableInput>) {
 export async function deleteTable(id: string) {
   const session = await requireCouple();
 
-  // Unassign guests first
-  await prisma.guest.updateMany({
-    where: { tableId: id, weddingId: session.user.weddingId },
-    data: { tableId: null },
-  });
+  // Unassign guest seats and legacy guest tableId
+  await Promise.all([
+    prisma.guestSeat.updateMany({
+      where: { tableId: id, weddingId: session.user.weddingId },
+      data: { tableId: null },
+    }),
+    prisma.guest.updateMany({
+      where: { tableId: id, weddingId: session.user.weddingId },
+      data: { tableId: null },
+    }),
+  ]);
 
   await prisma.table.deleteMany({
     where: { id, weddingId: session.user.weddingId },
   });
 
   revalidatePath('/dashboard/seating');
+}
+
+export async function assignSeatToTable(seatId: string, tableId: string | null) {
+  const session = await requireCouple();
+
+  const seat = await prisma.guestSeat.findFirst({
+    where: { id: seatId, weddingId: session.user.weddingId },
+    select: { guestId: true, seatIndex: true },
+  });
+  if (!seat) throw new Error('Seat not found');
+
+  await prisma.guestSeat.update({ where: { id: seatId }, data: { tableId } });
+
+  // Keep Guest.tableId synced for the primary seat (used by guest-table view)
+  if (seat.seatIndex === 0) {
+    await prisma.guest.update({ where: { id: seat.guestId }, data: { tableId } });
+  }
 }
 
 export async function moveTable(id: string, x: number, y: number) {

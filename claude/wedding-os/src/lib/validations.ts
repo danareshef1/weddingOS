@@ -34,11 +34,13 @@ export const rsvpSchema = z.object({
 export type RsvpInput = z.infer<typeof rsvpSchema>;
 
 export const guestSchema = z.object({
-  firstName: z.string().min(1),
+  guestType: z.enum(['INDIVIDUAL', 'FAMILY']).default('INDIVIDUAL'),
+  firstName: z.string().default(''),
   lastName: z.string().min(1),
   email: z.string().email().optional().or(z.literal('')),
   phone: z.string().optional(),
   group: z.string().optional(),
+  guestCount: z.number().int().min(1).default(1),
   tags: z.array(z.string()).optional(),
   mealChoice: z.string().optional(),
   allergies: z.string().optional(),

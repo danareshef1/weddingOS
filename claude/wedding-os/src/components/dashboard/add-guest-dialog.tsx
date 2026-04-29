@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
-import { UserPlus, ChevronDown, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { UserPlus, Users, User, Loader2, Minus, Plus } from 'lucide-react';
 import { createGuest } from '@/actions/guests';
 import { guestSchema } from '@/lib/validations';
 import {
@@ -23,42 +23,94 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
-const initialForm = {
+// ─── Category options ─────────────────────────────────────────────────────────
+
+const CATEGORIES = [
+  { value: "Groom's friends",          key: 'groomFriends' },
+  { value: "Bride's friends",          key: 'brideFriends' },
+  { value: "Groom's family",           key: 'groomFamily' },
+  { value: "Bride's family",           key: 'brideFamily' },
+  { value: "Groom's parents' friends", key: 'groomParentsFriends' },
+  { value: "Bride's parents' friends", key: 'brideParentsFriends' },
+  { value: "Groom's parents' work",    key: 'groomParentsWork' },
+  { value: "Bride's parents' work",    key: 'brideParentsWork' },
+  { value: "Groom's work",             key: 'groomWork' },
+  { value: "Bride's work",             key: 'brideWork' },
+  { value: 'Other',                    key: 'other' },
+] as const;
+
+// ─── Guest count stepper ──────────────────────────────────────────────────────
+
+function CountStepper({ value, onChange }: { value: number; onChange: (n: number) => void }) {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(1, value - 1))}
+        className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50 transition-colors"
+      >
+        <Minus className="h-3.5 w-3.5" />
+      </button>
+      <span className="w-8 text-center text-sm font-semibold text-gray-900">{value}</span>
+      <button
+        type="button"
+        onClick={() => onChange(Math.min(50, value + 1))}
+        className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50 transition-colors"
+      >
+        <Plus className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
+}
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type GuestType = 'INDIVIDUAL' | 'FAMILY';
+
+const initialIndividual = {
   firstName: '',
   lastName: '',
-  email: '',
   phone: '',
+  guestCount: 1,
   group: '',
-  rsvpStatus: 'PENDING' as const,
-  mealChoice: '',
-  plusOneName: '',
-  plusOneMeal: '',
-  allergies: '',
 };
+
+const initialFamily = {
+  familyName: '',
+  phone: '',
+  guestCount: 2,
+  group: '',
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function AddGuestDialog() {
   const t = useTranslations('dashboard');
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState(initialForm);
-  const [showPlusOne, setShowPlusOne] = useState(false);
+  const [guestType, setGuestType] = useState<GuestType>('INDIVIDUAL');
+  const [individual, setIndividual] = useState(initialIndividual);
+  const [family, setFamily] = useState(initialFamily);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
 
-  function update(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setFieldErrors((prev) => {
-      const next = { ...prev };
-      delete next[field];
-      return next;
-    });
+  function updateIndividual(k: keyof typeof initialIndividual, v: string | number) {
+    setIndividual((p) => ({ ...p, [k]: v }));
+    setFieldErrors((p) => { const n = { ...p }; delete n[k]; return n; });
+  }
+
+  function updateFamily(k: keyof typeof initialFamily, v: string | number) {
+    setFamily((p) => ({ ...p, [k]: v }));
+    setFieldErrors((p) => { const n = { ...p }; delete n[k]; return n; });
   }
 
   function resetForm() {
-    setForm(initialForm);
-    setShowPlusOne(false);
+    setGuestType('INDIVIDUAL');
+    setIndividual(initialIndividual);
+    setFamily(initialFamily);
     setError(null);
     setFieldErrors({});
     setSuccess(false);
@@ -69,18 +121,26 @@ export function AddGuestDialog() {
     setError(null);
     setFieldErrors({});
 
-    const data = {
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email || undefined,
-      phone: form.phone || undefined,
-      group: form.group || undefined,
-      rsvpStatus: form.rsvpStatus,
-      mealChoice: form.mealChoice || undefined,
-      plusOneName: form.plusOneName || undefined,
-      plusOneMeal: form.plusOneMeal || undefined,
-      allergies: form.allergies || undefined,
-    };
+    const data =
+      guestType === 'INDIVIDUAL'
+        ? {
+            guestType: 'INDIVIDUAL' as const,
+            firstName: individual.firstName,
+            lastName: individual.lastName,
+            phone: individual.phone || undefined,
+            guestCount: individual.guestCount,
+            group: individual.group || undefined,
+            rsvpStatus: 'PENDING' as const,
+          }
+        : {
+            guestType: 'FAMILY' as const,
+            firstName: '',
+            lastName: family.familyName,
+            phone: family.phone || undefined,
+            guestCount: family.guestCount,
+            group: family.group || undefined,
+            rsvpStatus: 'PENDING' as const,
+          };
 
     const result = guestSchema.safeParse(data);
     if (!result.success) {
@@ -109,20 +169,15 @@ export function AddGuestDialog() {
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        setOpen(v);
-        if (!v) resetForm();
-      }}
-    >
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
       <DialogTrigger asChild>
         <Button size="sm">
           <UserPlus className="me-2 h-4 w-4" />
           {t('addGuest')}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
+
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-primary" />
@@ -130,220 +185,177 @@ export function AddGuestDialog() {
           </DialogTitle>
         </DialogHeader>
 
-        <motion.form
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          onSubmit={handleSubmit}
-          className="space-y-6"
-        >
-          {/* Basic Info */}
-          <fieldset className="space-y-3">
-            <legend className="text-sm font-medium text-muted-foreground">
-              {t('basicInfo')}
-            </legend>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="firstName">{t('firstName')} *</Label>
-                <Input
-                  id="firstName"
-                  value={form.firstName}
-                  onChange={(e) => update('firstName', e.target.value)}
-                  className={fieldErrors.firstName ? 'border-destructive' : ''}
-                />
-                {fieldErrors.firstName && (
-                  <p className="text-xs text-destructive">{fieldErrors.firstName}</p>
+        {/* Type switcher */}
+        <div className="grid grid-cols-2 gap-2 rounded-xl border bg-gray-50 p-1.5">
+          {(['INDIVIDUAL', 'FAMILY'] as const).map((type) => {
+            const isActive = guestType === type;
+            const Icon = type === 'INDIVIDUAL' ? User : Users;
+            const label = type === 'INDIVIDUAL' ? t('individualGuest') : t('familyGroup');
+            const desc = type === 'INDIVIDUAL' ? t('individualDesc') : t('familyDesc');
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => { setGuestType(type); setFieldErrors({}); setError(null); }}
+                className={cn(
+                  'flex flex-col items-start gap-0.5 rounded-lg px-3 py-2.5 text-start transition-all',
+                  isActive
+                    ? 'bg-white shadow-sm ring-1 ring-gray-200'
+                    : 'hover:bg-white/60',
                 )}
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="lastName">{t('lastName')} *</Label>
-                <Input
-                  id="lastName"
-                  value={form.lastName}
-                  onChange={(e) => update('lastName', e.target.value)}
-                  className={fieldErrors.lastName ? 'border-destructive' : ''}
-                />
-                {fieldErrors.lastName && (
-                  <p className="text-xs text-destructive">{fieldErrors.lastName}</p>
-                )}
-              </div>
-            </div>
-          </fieldset>
+              >
+                <div className="flex items-center gap-1.5">
+                  <Icon className={cn('h-4 w-4', isActive ? 'text-rose-500' : 'text-gray-400')} />
+                  <span className={cn('text-sm font-semibold', isActive ? 'text-gray-900' : 'text-gray-500')}>
+                    {label}
+                  </span>
+                </div>
+                <span className="text-[11px] text-gray-400 leading-snug">{desc}</span>
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Contact */}
-          <fieldset className="space-y-3">
-            <legend className="text-sm font-medium text-muted-foreground">
-              {t('contactInfo')}
-            </legend>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="email">{t('email')}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => update('email', e.target.value)}
-                  className={fieldErrors.email ? 'border-destructive' : ''}
-                />
-                {fieldErrors.email && (
-                  <p className="text-xs text-destructive">{fieldErrors.email}</p>
-                )}
+        <motion.form
+          key={guestType}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.15 }}
+          onSubmit={handleSubmit}
+          className="space-y-5 pt-1"
+        >
+          {guestType === 'INDIVIDUAL' ? (
+            <>
+              {/* Name row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="firstName">{t('firstName')} *</Label>
+                  <Input
+                    id="firstName"
+                    value={individual.firstName}
+                    onChange={(e) => updateIndividual('firstName', e.target.value)}
+                    className={fieldErrors.firstName ? 'border-destructive' : ''}
+                    autoFocus
+                  />
+                  {fieldErrors.firstName && (
+                    <p className="text-xs text-destructive">{fieldErrors.firstName}</p>
+                  )}
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="lastName">{t('lastName')} *</Label>
+                  <Input
+                    id="lastName"
+                    value={individual.lastName}
+                    onChange={(e) => updateIndividual('lastName', e.target.value)}
+                    className={fieldErrors.lastName ? 'border-destructive' : ''}
+                  />
+                  {fieldErrors.lastName && (
+                    <p className="text-xs text-destructive">{fieldErrors.lastName}</p>
+                  )}
+                </div>
               </div>
+
+              {/* Phone */}
               <div className="space-y-1.5">
                 <Label htmlFor="phone">{t('phone')}</Label>
                 <Input
                   id="phone"
                   type="tel"
-                  value={form.phone}
-                  onChange={(e) => update('phone', e.target.value)}
+                  value={individual.phone}
+                  onChange={(e) => updateIndividual('phone', e.target.value)}
                 />
               </div>
-            </div>
-          </fieldset>
 
-          {/* Event Details */}
-          <fieldset className="space-y-3">
-            <legend className="text-sm font-medium text-muted-foreground">
-              {t('eventDetails')}
-            </legend>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <Label>{t('group')}</Label>
-                <Select
-                  value={form.group}
-                  onValueChange={(v) => update('group', v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('selectGroup')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Groom's friends">{t('groomFriends')}</SelectItem>
-                    <SelectItem value="Bride's friends">{t('brideFriends')}</SelectItem>
-                    <SelectItem value="Groom's family">{t('groomFamily')}</SelectItem>
-                    <SelectItem value="Bride's family">{t('brideFamily')}</SelectItem>
-                    <SelectItem value="Groom's parents' friends">{t('groomParentsFriends')}</SelectItem>
-                    <SelectItem value="Bride's parents' friends">{t('brideParentsFriends')}</SelectItem>
-                    <SelectItem value="Groom's parents' work">{t('groomParentsWork')}</SelectItem>
-                    <SelectItem value="Bride's parents' work">{t('brideParentsWork')}</SelectItem>
-                    <SelectItem value="Groom's work">{t('groomWork')}</SelectItem>
-                    <SelectItem value="Bride's work">{t('brideWork')}</SelectItem>
-                    <SelectItem value="Other">{t('other')}</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Guest count + category */}
+              <div className="grid grid-cols-2 gap-3 items-start">
+                <div className="space-y-1.5">
+                  <Label>{t('guestCount')}</Label>
+                  <CountStepper
+                    value={individual.guestCount}
+                    onChange={(n) => updateIndividual('guestCount', n)}
+                  />
+                  <p className="text-[11px] text-gray-400">{t('guestCountHint')}</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>{t('group')}</Label>
+                  <Select value={individual.group} onValueChange={(v) => updateIndividual('group', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('selectGroup')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((c) => (
+                        <SelectItem key={c.value} value={c.value}>{t(c.key as any)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
+            </>
+          ) : (
+            <>
+              {/* Family name */}
               <div className="space-y-1.5">
-                <Label>{t('rsvpStatus')}</Label>
-                <Select
-                  value={form.rsvpStatus}
-                  onValueChange={(v) => update('rsvpStatus', v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="PENDING">{t('pending')}</SelectItem>
-                    <SelectItem value="ACCEPTED">{t('accepted')}</SelectItem>
-                    <SelectItem value="DECLINED">{t('declined')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="mealChoice">{t('mealChoice')}</Label>
+                <Label htmlFor="familyName">{t('familyName')} *</Label>
                 <Input
-                  id="mealChoice"
-                  value={form.mealChoice}
-                  onChange={(e) => update('mealChoice', e.target.value)}
+                  id="familyName"
+                  value={family.familyName}
+                  onChange={(e) => updateFamily('familyName', e.target.value)}
+                  placeholder="e.g. The Cohen Family"
+                  className={fieldErrors.lastName ? 'border-destructive' : ''}
+                  autoFocus
+                />
+                {fieldErrors.lastName && (
+                  <p className="text-xs text-destructive">{fieldErrors.lastName}</p>
+                )}
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-1.5">
+                <Label htmlFor="familyPhone">{t('phone')}</Label>
+                <Input
+                  id="familyPhone"
+                  type="tel"
+                  value={family.phone}
+                  onChange={(e) => updateFamily('phone', e.target.value)}
                 />
               </div>
-            </div>
-          </fieldset>
 
-          {/* Plus One — collapsible */}
-          <fieldset className="space-y-3">
-            <button
-              type="button"
-              onClick={() => setShowPlusOne(!showPlusOne)}
-              className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <motion.span
-                animate={{ rotate: showPlusOne ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChevronDown className="h-4 w-4" />
-              </motion.span>
-              {t('plusOne')}
-            </button>
-            <AnimatePresence>
-              {showPlusOne && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <div className="grid grid-cols-2 gap-3 pt-1">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="plusOneName">{t('plusOneName')}</Label>
-                      <Input
-                        id="plusOneName"
-                        value={form.plusOneName}
-                        onChange={(e) => update('plusOneName', e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="plusOneMeal">{t('plusOneMeal')}</Label>
-                      <Input
-                        id="plusOneMeal"
-                        value={form.plusOneMeal}
-                        onChange={(e) => update('plusOneMeal', e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </fieldset>
-
-          {/* Notes */}
-          <fieldset className="space-y-3">
-            <legend className="text-sm font-medium text-muted-foreground">
-              {t('notes')}
-            </legend>
-            <div className="space-y-1.5">
-              <Label htmlFor="allergies">{t('allergies')}</Label>
-              <textarea
-                id="allergies"
-                value={form.allergies}
-                onChange={(e) => update('allergies', e.target.value)}
-                rows={2}
-                className="flex w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-              />
-            </div>
-          </fieldset>
-
-          {/* Error / Success messages */}
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
+              {/* Guest count + category */}
+              <div className="grid grid-cols-2 gap-3 items-start">
+                <div className="space-y-1.5">
+                  <Label>{t('guestCount')}</Label>
+                  <CountStepper
+                    value={family.guestCount}
+                    onChange={(n) => updateFamily('guestCount', n)}
+                  />
+                  <p className="text-[11px] text-gray-400">{t('guestCountHint')}</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>{t('group')}</Label>
+                  <Select value={family.group} onValueChange={(v) => updateFamily('group', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('selectGroup')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((c) => (
+                        <SelectItem key={c.value} value={c.value}>{t(c.key as any)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </>
           )}
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
           {success && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-sm text-green-600"
-            >
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-green-600">
               {t('guestAdded')}
             </motion.p>
           )}
 
-          {/* Actions */}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={loading}
-            >
+          <div className="flex justify-end gap-2 pt-1">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               {t('cancel')}
             </Button>
             <Button type="submit" disabled={loading || success}>

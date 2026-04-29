@@ -15,7 +15,7 @@ export default async function SchedulePage({
   const t = await getTranslations('dashboard');
   const weddingId = session.user.weddingId!;
 
-  const [items, vendors] = await Promise.all([
+  const [items, vendors, wedding] = await Promise.all([
     prisma.scheduleItem.findMany({
       where: { weddingId },
       include: { vendor: true },
@@ -25,21 +25,28 @@ export default async function SchedulePage({
       where: { weddingId },
       orderBy: { name: 'asc' },
       select: {
-        id: true,
-        name: true,
-        category: true,
-        phone: true,
-        email: true,
-        amountPaid: true,
-        remainingBalance: true,
+        id: true, name: true, category: true,
+        phone: true, email: true, amountPaid: true, remainingBalance: true,
       },
     }),
+    prisma.wedding.findUnique({
+      where: { id: weddingId },
+      select: { date: true, partner1Name: true, partner2Name: true },
+    }),
   ]);
+
+  const coupleNames = [wedding?.partner1Name, wedding?.partner2Name].filter(Boolean).join(' & ') || 'The Couple';
 
   return (
     <div className="space-y-6">
       <h1 className="font-serif text-3xl font-bold">{t('schedule')}</h1>
-      <ScheduleTimeline initialItems={items as any} vendors={vendors} locale={locale} />
+      <ScheduleTimeline
+        initialItems={items as any}
+        vendors={vendors}
+        weddingDate={wedding?.date ?? null}
+        coupleNames={coupleNames}
+        locale={locale}
+      />
     </div>
   );
 }

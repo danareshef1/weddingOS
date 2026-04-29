@@ -33,6 +33,19 @@ enum TableShape {
   RECTANGLE
 }
 
+enum GiftPaymentMethod {
+  CASH
+  CHECK
+  BANK_TRANSFER
+  BIT
+  ONLINE
+}
+
+enum GiftStatus {
+  RECEIVED
+  PENDING
+}
+
 model Wedding {
   id                 String   @id @default(cuid())
   slug               String   @unique
@@ -66,7 +79,8 @@ model Wedding {
   faqs             FAQ[]
   timelineEvents   TimelineEvent[]
   scheduleItems    ScheduleItem[]
-  forecastBoards    ForecastBoard[]
+  forecastBoards   ForecastBoard[]
+  giftEntries      GiftEntry[]
   seatingBackground String?
 }
 
@@ -162,7 +176,8 @@ model Guest {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  messageLogs MessageLog[]
+  messageLogs  MessageLog[]
+  giftEntries  GiftEntry[]
 
   @@index([weddingId])
   @@index([tableId])
@@ -377,5 +392,25 @@ model MessageLog {
   sentAt        DateTime    @default(now())
 
   @@index([messageSendId])
+  @@index([guestId])
+}
+
+model GiftEntry {
+  id            String            @id @default(cuid())
+  weddingId     String
+  wedding       Wedding           @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  guestId       String?
+  guest         Guest?            @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  guestName     String
+  attendeeCount Int               @default(1)
+  amount        Float             @default(0)
+  method        GiftPaymentMethod @default(CASH)
+  status        GiftStatus        @default(PENDING)
+  notes         String?
+  receivedAt    DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([weddingId])
   @@index([guestId])
 }

@@ -147,6 +147,8 @@
     "messages": "Messages",
     "aiPlanner": "AI Planner",
     "schedule": "Schedule",
+    "gifts": "Gifts & Envelopes",
+    "giftsSubtitle": "Track every gift and monetary envelope received at your wedding",
     "aiPlannerSubtitle": "Your personal wedding planning assistant, powered by AI",
     "aiPlannerEmpty": "Ask me anything about your wedding — I know your guest list, budget, vendors, and to-dos.",
     "aiPlannerInputPlaceholder": "Ask your AI wedding planner...",

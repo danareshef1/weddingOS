@@ -51,6 +51,37 @@ export async function sendRsvpEmail(
   });
 }
 
+export async function sendScheduleEmail({
+  to, coupleNames, eventCount, message, icsContent, icsFilename,
+}: {
+  to: string; coupleNames: string; eventCount: number;
+  message: string; icsContent: string; icsFilename: string;
+}) {
+  const isDev = process.env.NODE_ENV !== 'production';
+  if (isDev && !hasSmtpConfig()) {
+    console.log('\n--- SCHEDULE EMAIL (dev mode) ---');
+    console.log(`To: ${to} | Events: ${eventCount} | ICS length: ${icsContent.length}`);
+    console.log('----------------------------------\n');
+    return;
+  }
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px;">
+      <h2 style="color:#e11d48;margin-bottom:8px;">💍 ${coupleNames} — Wedding Day Schedule</h2>
+      <p style="color:#374151;line-height:1.6;">${message || `The full wedding day schedule (${eventCount} events) is attached as a .ics calendar file. Open it to add all events to your calendar.`}</p>
+      <p style="color:#6b7280;font-size:13px;margin-top:16px;">Open the attached .ics file to import into Google Calendar, Apple Calendar, or Outlook.</p>
+    </div>
+  `;
+
+  await createTransporter().sendMail({
+    from: process.env.EMAIL_FROM || 'noreply@wedding-os.com',
+    to,
+    subject: `💍 ${coupleNames} — Wedding Day Schedule`,
+    html,
+    attachments: [{ filename: icsFilename, content: icsContent, contentType: 'text/calendar' }],
+  });
+}
+
 export async function sendVerificationEmail(email: string, token: string) {
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
   const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}`;

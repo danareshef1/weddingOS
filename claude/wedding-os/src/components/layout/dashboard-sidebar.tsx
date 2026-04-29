@@ -22,6 +22,7 @@ import {
   BarChart3,
   Sparkles,
   CalendarClock,
+  Gift,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
@@ -51,6 +52,7 @@ export function DashboardSidebar() {
     { href: `/${locale}/dashboard/messages`, label: t('messages'), icon: MessageSquare },
     { href: `/${locale}/dashboard/ai-planner`, label: t('aiPlanner'), icon: Sparkles },
     { href: `/${locale}/dashboard/schedule`, label: t('schedule'), icon: CalendarClock },
+    { href: `/${locale}/dashboard/gifts`, label: t('gifts'), icon: Gift },
     { href: `/${locale}/dashboard/settings`, label: t('settings'), icon: Settings },
   ];
 

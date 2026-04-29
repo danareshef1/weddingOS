@@ -4,6 +4,58 @@ Tasks to execute, each written as a self-contained prompt.
 
 ---
 
+## Mission 4 — Guest Gifts & Envelope Management
+
+Build a complete gift and envelope tracking feature inside the dashboard.
+
+**Overview**
+A dedicated tab where the couple can track every monetary gift received at their wedding — from confirmed guests and unexpected attendees alike. The goal is to replace the physical envelope ledger with a clean, digital, organized system.
+
+**Guest List Integration**
+- Auto-populate the gift list with all guests whose RSVP status is `ACCEPTED`.
+- Each accepted guest (or their household/plus-one group) appears as a gift entry by default.
+- Allow manually adding extra entries for walk-in guests, family friends not in the system, or group envelopes (e.g. "Uncle's side of the family").
+
+**Per-Entry Tracking**
+Each gift entry records:
+- Guest name (pre-filled from guest list or manually entered)
+- Number of attendees covered by this envelope (defaults to RSVP accepted count including plus-one)
+- Gift amount (₪)
+- Payment method: `Cash`, `Check`, `Bank Transfer`, `Bit`, `Online / App`
+- Status: `Received` / `Pending`
+- Notes (free text — e.g. "check #1234", "received via sister", "promised to transfer")
+- Timestamp of when it was marked received
+
+**Summary Dashboard**
+At the top of the tab, show a summary card strip:
+- Total gifts received (₪ sum of all `Received` entries)
+- Total pending (₪ sum of `Pending` entries)
+- Number of envelopes received vs. total
+- Average gift per entry
+- Average gift per person (total amount ÷ total attendees)
+- Breakdown by payment method (bar or pill breakdown)
+
+**Search & Filter**
+- Search by guest name
+- Filter by payment method
+- Filter by status (received / pending / all)
+- Sort by: amount (high/low), name (A–Z), date received
+
+**Export**
+- Export to CSV / Excel with all columns: name, attendees, amount, method, status, notes, date
+
+**Tech Notes**
+- Add a new `GiftEntry` Prisma model with fields: `id`, `weddingId`, `guestId` (optional FK to Guest), `guestName` (string, for manual entries), `attendeeCount`, `amount`, `method` (enum: CASH, CHECK, BANK_TRANSFER, BIT, ONLINE), `status` (enum: RECEIVED, PENDING), `notes`, `receivedAt`, `createdAt`.
+- Add a `GiftEntry` enum for `method` and `status` in `schema.prisma`.
+- Add server actions: `createGiftEntry`, `updateGiftEntry`, `deleteGiftEntry`, `importFromGuests` (bulk-create entries from accepted guests).
+- Add a `/dashboard/gifts` page with the full UI.
+- Add a "Gifts" entry to the dashboard sidebar (use a `Gift` or `Banknote` icon from lucide-react).
+- Export via a `/api/gifts/export` route that returns a CSV.
+- Follow existing dashboard layout, sidebar, and i18n patterns (en + he).
+- Add all new UI strings to `src/messages/en.json` and `src/messages/he.json`.
+
+---
+
 ## Mission 3 — Advanced Wedding Schedule Management
 
 Build a complete, interactive wedding-day schedule system inside the dashboard.

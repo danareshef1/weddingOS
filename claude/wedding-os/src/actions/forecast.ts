@@ -157,3 +157,26 @@ export async function deleteForecastItem(itemId: string) {
 
   revalidatePath('/dashboard/budget-forecast');
 }
+
+export async function importForecastToBudget(boardId: string) {
+  const session = await requireCouple();
+  const weddingId = session.user.weddingId;
+
+  const board = await prisma.forecastBoard.findFirst({
+    where: { id: boardId, weddingId },
+    include: { items: true },
+  });
+  if (!board) throw new Error('Board not found');
+
+  await prisma.budgetItem.createMany({
+    data: board.items.map((item) => ({
+      weddingId,
+      category: item.isVenue ? 'Venue' : item.name,
+      vendor: item.name,
+      estimated: item.isVenue ? item.pricePerGuest * item.numGuests : item.cost,
+    })),
+  });
+
+  revalidatePath('/dashboard/budget');
+  revalidatePath('/dashboard/budget-forecast');
+}

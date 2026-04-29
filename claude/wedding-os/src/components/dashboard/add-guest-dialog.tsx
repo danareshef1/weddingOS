@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { UserPlus, Users, User, Loader2, Minus, Plus } from 'lucide-react';
+import { UserPlus, Users, User, Loader2, Minus, Plus, BookUser } from 'lucide-react';
 import { createGuest } from '@/actions/guests';
 import { guestSchema } from '@/lib/validations';
 import {
@@ -24,6 +24,21 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+
+// Contact Picker API types (not in standard TS lib yet)
+type ContactProperty = 'name' | 'tel' | 'email';
+interface ContactsManager {
+  select(props: ContactProperty[], opts?: { multiple?: boolean }): Promise<Array<{ name?: string[]; tel?: string[] }>>;
+}
+declare global {
+  interface Navigator { contacts?: ContactsManager; }
+}
+
+function parseContactName(fullName: string): { firstName: string; lastName: string } {
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length === 1) return { firstName: parts[0], lastName: '' };
+  return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
+}
 
 // ─── Category options ─────────────────────────────────────────────────────────
 
@@ -93,9 +108,40 @@ export function AddGuestDialog() {
   const [individual, setIndividual] = useState(initialIndividual);
   const [family, setFamily] = useState(initialFamily);
   const [loading, setLoading] = useState(false);
+  const [pickingContact, setPickingContact] = useState(false);
+  const [contactFilled, setContactFilled] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
+
+  const [contactsSupported, setContactsSupported] = useState(false);
+  useEffect(() => {
+    setContactsSupported(typeof navigator !== 'undefined' && 'contacts' in navigator);
+  }, []);
+
+  async function handlePickContact() {
+    if (!navigator.contacts) return;
+    setPickingContact(true);
+    setContactFilled(false);
+    try {
+      const results = await navigator.contacts.select(['name', 'tel'], { multiple: false });
+      if (!results.length) return;
+      const contact = results[0];
+      const fullName = contact.name?.[0] ?? '';
+      const phone = contact.tel?.[0] ?? '';
+      const { firstName, lastName } = parseContactName(fullName);
+      if (guestType === 'INDIVIDUAL') {
+        setIndividual((prev) => ({ ...prev, firstName, lastName, phone }));
+      } else {
+        setFamily((prev) => ({ ...prev, familyName: lastName || firstName, phone }));
+      }
+      setContactFilled(true);
+    } catch {
+      // User cancelled or permission denied — do nothing
+    } finally {
+      setPickingContact(false);
+    }
+  }
 
   function updateIndividual(k: keyof typeof initialIndividual, v: string | number) {
     setIndividual((p) => ({ ...p, [k]: v }));
@@ -114,6 +160,7 @@ export function AddGuestDialog() {
     setError(null);
     setFieldErrors({});
     setSuccess(false);
+    setContactFilled(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -215,6 +262,27 @@ export function AddGuestDialog() {
             );
           })}
         </div>
+
+        {/* Contact picker — only shown on supporting devices */}
+        {contactsSupported && (
+          <div className="space-y-1.5">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full gap-2 border-dashed"
+              onClick={handlePickContact}
+              disabled={pickingContact}
+            >
+              {pickingContact
+                ? <Loader2 className="h-4 w-4 animate-spin" />
+                : <BookUser className="h-4 w-4 text-rose-500" />}
+              {t('importFromContacts')}
+            </Button>
+            {contactFilled && (
+              <p className="text-center text-xs text-emerald-600">{t('contactsFilled')}</p>
+            )}
+          </div>
+        )}
 
         <motion.form
           key={guestType}

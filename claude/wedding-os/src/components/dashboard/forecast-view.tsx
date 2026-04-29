@@ -21,6 +21,7 @@ import {
   addForecastItem,
   updateForecastItem,
   deleteForecastItem,
+  importForecastToBudget,
 } from '@/actions/forecast';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -200,6 +201,10 @@ function BoardDetail({
   const [editNumGuests, setEditNumGuests] = useState('');
   const [savingItemId, setSavingItemId] = useState<string | null>(null);
 
+  const [showImportConfirm, setShowImportConfirm] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(false);
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [addIsVenue, setAddIsVenue] = useState(false);
   const [addName, setAddName] = useState('');
@@ -298,6 +303,18 @@ function BoardDetail({
     setAddIsVenue(false);
   }
 
+  async function handleImport() {
+    setImporting(true);
+    try {
+      await importForecastToBudget(initialBoard.id);
+      setShowImportConfirm(false);
+      setImportSuccess(true);
+      setTimeout(() => setImportSuccess(false), 3000);
+    } finally {
+      setImporting(false);
+    }
+  }
+
   const availablePresets = PRESET_VENDORS.filter((p) => !items.some((i) => i.name === p));
 
   return (
@@ -339,27 +356,62 @@ function BoardDetail({
       </div>
 
       {/* Grand total banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100 p-5 ring-1 ring-rose-200/60">
-        <div>
-          <p className="text-sm font-medium text-gray-500">{t('fTotalEstimated')}</p>
-          <p className="mt-0.5 text-4xl font-bold tabular-nums text-gray-900">{fmt(total)}</p>
-        </div>
-        <div className="flex flex-wrap gap-4 text-sm">
-          {hasVenue && (
+      <div className="rounded-2xl bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100 p-5 ring-1 ring-rose-200/60">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-gray-500">{t('fTotalEstimated')}</p>
+            <p className="mt-0.5 text-4xl font-bold tabular-nums text-gray-900">{fmt(total)}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-4 text-sm">
+            {hasVenue && (
+              <div>
+                <p className="text-xs text-gray-400">{t('fVenue')}</p>
+                <p className="font-semibold tabular-nums text-gray-700">
+                  {fmt(items.filter((i) => i.isVenue).reduce((s, i) => s + itemTotal(i), 0))}
+                </p>
+              </div>
+            )}
             <div>
-              <p className="text-xs text-gray-400">{t('fVenue')}</p>
+              <p className="text-xs text-gray-400">{t('fOtherVendors')}</p>
               <p className="font-semibold tabular-nums text-gray-700">
-                {fmt(items.filter((i) => i.isVenue).reduce((s, i) => s + itemTotal(i), 0))}
+                {fmt(items.filter((i) => !i.isVenue).reduce((s, i) => s + itemTotal(i), 0))}
               </p>
             </div>
-          )}
-          <div>
-            <p className="text-xs text-gray-400">{t('fOtherVendors')}</p>
-            <p className="font-semibold tabular-nums text-gray-700">
-              {fmt(items.filter((i) => !i.isVenue).reduce((s, i) => s + itemTotal(i), 0))}
-            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-rose-300 bg-white text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+              onClick={() => { setShowImportConfirm(true); setImportSuccess(false); }}
+              disabled={items.length === 0}
+            >
+              {importSuccess ? <Check className="me-1.5 h-3.5 w-3.5" /> : null}
+              {importSuccess ? t('fUseAsBudgetSuccess') : t('fUseAsBudget')}
+            </Button>
           </div>
         </div>
+
+        {showImportConfirm && (
+          <div className="mt-4 rounded-xl border border-rose-200 bg-white p-4">
+            <p className="font-medium text-gray-900">{t('fUseAsBudgetConfirmTitle')}</p>
+            <p className="mt-1 text-sm text-gray-500">
+              {t('fUseAsBudgetConfirmDesc', { name: boardName })}
+            </p>
+            <div className="mt-3 flex gap-2">
+              <Button
+                size="sm"
+                className="bg-rose-500 hover:bg-rose-600"
+                onClick={handleImport}
+                disabled={importing}
+              >
+                {importing ? <Loader2 className="me-1.5 h-3.5 w-3.5 animate-spin" /> : null}
+                {t('fUseAsBudgetConfirm')}
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setShowImportConfirm(false)} disabled={importing}>
+                {t('fCancel')}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Venue card (special) */}

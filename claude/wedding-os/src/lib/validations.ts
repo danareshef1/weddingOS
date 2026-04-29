@@ -61,6 +61,7 @@ export const budgetItemSchema = z.object({
   deposit: z.number().min(0).optional(),
   paymentMethod: z.enum(['BANK_TRANSFER', 'CASH', 'CREDIT', 'CHECKS', 'INSTALLMENTS']).optional(),
   dueDate: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 export type BudgetItemInput = z.infer<typeof budgetItemSchema>;

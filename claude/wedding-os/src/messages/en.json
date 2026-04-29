@@ -211,6 +211,8 @@
     "notes": "Notes",
     "guestAdded": "Guest added successfully!",
     "addGuestError": "Failed to add guest. Please try again.",
+    "importFromContacts": "Import from Contacts",
+    "contactsFilled": "Contact imported — review and add",
     "logout": "Logout",
     "vendorName": "Vendor Name",
     "vendorCategory": "Category",
@@ -229,6 +231,9 @@
     "installments": "Installments",
     "budgetItemAdded": "Budget item added successfully!",
     "addBudgetError": "Failed to add budget item. Please try again.",
+    "editBudgetItem": "Edit Budget Item",
+    "saveChanges": "Save Changes",
+    "dueDate": "Due Date",
     "totalDeposits": "Total Deposits",
     "amountPaid": "Amount Paid",
     "remainingBalance": "Remaining",
@@ -418,7 +423,12 @@
     "fPresetGardenVenue": "Garden venue",
     "fPresetCityHall": "City hall",
     "fPreset250Guests": "250 guests",
-    "fPresetWinter": "Winter wedding"
+    "fPresetWinter": "Winter wedding",
+    "fUseAsBudget": "Use as actual budget",
+    "fUseAsBudgetConfirmTitle": "Copy to Budget tab?",
+    "fUseAsBudgetConfirmDesc": "This will add all items from \"{name}\" as estimated costs in your main Budget tab. You can edit or remove them there afterwards.",
+    "fUseAsBudgetConfirm": "Copy to Budget",
+    "fUseAsBudgetSuccess": "Copied to Budget tab!"
   },
   "guest": {
     "title": "Guest Portal",

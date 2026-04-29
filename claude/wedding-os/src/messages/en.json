@@ -211,6 +211,8 @@
     "notes": "Notes",
     "guestAdded": "Guest added successfully!",
     "addGuestError": "Failed to add guest. Please try again.",
+    "importFromContacts": "Import from Contacts",
+    "contactsFilled": "Contact imported — review and add",
     "logout": "Logout",
     "vendorName": "Vendor Name",
     "vendorCategory": "Category",

@@ -211,6 +211,8 @@
     "notes": "הערות",
     "guestAdded": "!האורח נוסף בהצלחה",
     "addGuestError": "הוספת האורח נכשלה. נא לנסות שוב.",
+    "importFromContacts": "ייבוא מאנשי קשר",
+    "contactsFilled": "איש הקשר יובא — בדוק והוסף",
     "logout": "התנתקות",
     "vendorName": "שם הספק",
     "vendorCategory": "קטגוריה",

@@ -19,15 +19,18 @@ A full-featured, bilingual wedding planning platform built with Next.js 14. Desi
 
 ### Dashboard (Couple/Admin)
 - **Overview** — RSVP stats and budget summary at a glance
-- **Guests** — Full guest list management with CSV import/export, RSVP tracking, meal choices, plus-ones, and song requests
+- **Guests** — Full guest list management with CSV import/export, RSVP tracking, meal choices, plus-ones, song requests, and guest category/side (groom's friends, bride's family, etc.). Import contacts directly from phone (Android native picker).
 - **Seating** — Visual canvas with SVG-rendered round, square, and rectangle tables; seat dot indicators (filled/empty); drag tables to reposition; drag guests from unseated panel to tables; upload a floor plan sketch as background or build your own
-- **Budget** — Budget tracking by category; actual, paid, and deposit amounts; venue cost calculator with extra hours/persons
-- **Budget Forecast** — Create and compare multiple budget scenarios side by side
+- **Budget** — Fully editable budget rows: category, vendor, description, estimated, actual, deposit, paid, remaining, payment method, due date, notes. Venue cost calculator with extra hours/persons. Per-row remaining balance with color coding.
+- **Budget Forecast** — Create and compare multiple budget scenarios side by side. Copy any scenario into the main Budget tab as a working budget with one click.
 - **Vendors** — Vendor contacts, status tracking, and payment management
+- **Schedule** — Visual wedding-day timeline with add/edit/delete events, time display, and category badges
+- **Gifts & Envelopes** — Track every monetary gift received: amount, payment method (cash/check/bank transfer/Bit/online), status, notes. Auto-populated from accepted guests. Summary stats including totals, averages, and method breakdown. CSV export.
 - **Documents** — Upload, categorize, and delete files (contracts, invoices, receipts, etc.)
 - **To-Do List** — Task management with todo / in-progress / done states
 - **Gallery** — Image upload and management (approval/public flags)
 - **Messages** — Pre-built message templates for SMS, Email, and WhatsApp
+- **AI Planner** — Claude-powered assistant with full wedding context (guest list, budget, vendors, to-dos). Streaming responses, Hebrew/English support.
 - **Settings** — Wedding details: couple names, date, venue, locale, theme
 
 ### Authentication & Access Control
@@ -57,6 +60,7 @@ A full-featured, bilingual wedding planning platform built with Next.js 14. Desi
 | Charts | Recharts |
 | Drag & Drop | @dnd-kit |
 | Validation | Zod |
+| AI | Anthropic Claude API (`@anthropic-ai/sdk`) |
 | Testing | Vitest + Testing Library |
 
 ---
@@ -87,16 +91,19 @@ src/
 
 - **Wedding** — Core entity: couple info, venue, dates, settings
 - **User** — Auth with roles (COUPLE, ADMIN, GUEST, VENDOR)
-- **Guest** — RSVP, meal choice, plus-one, song requests
+- **Guest** — RSVP, meal choice, plus-one, song requests, guest type (INDIVIDUAL/FAMILY), category/side
 - **Table** — Seating layout with shape (ROUND/SQUARE/RECTANGLE), capacity, and X/Y canvas coordinates
 - **Document** — Uploaded files with category, notes, and file metadata
-- **BudgetItem** — Per-category budget with actual/paid/deposit tracking
+- **BudgetItem** — Per-category budget with estimated, actual, paid, deposit, notes, due date, and payment method
+- **ForecastBoard** — Named budget scenario (e.g. "Option A", "Garden Venue")
+- **ForecastItem** — Line item within a forecast board; supports venue (price × guests) and fixed-cost vendors
+- **GiftEntry** — Monetary gift/envelope tracking with amount, method, status, guest link, and notes
 - **Vendor** — Contact info, status, and payment tracking
 - **GalleryImage** — Photos with approval and public flags
 - **MessageTemplate** — SMS/Email/WhatsApp message templates
 - **FAQ** — Bilingual question/answer pairs
 - **TimelineEvent** — Story and timeline events
-- **ScheduleItem** — Day-of schedule
+- **ScheduleItem** — Day-of schedule items with time, title, description, and category
 - **InviteCode** — Reusable guest invite codes
 
 ---
@@ -151,6 +158,9 @@ EMAIL_SERVER_USER=your@email.com
 EMAIL_SERVER_PASSWORD=your-app-password
 EMAIL_FROM=noreply@your-domain.com
 
+# Anthropic — required for AI Planner
+ANTHROPIC_API_KEY=sk-ant-...
+
 # Optional S3
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
@@ -187,23 +197,30 @@ npx prisma studio # Open Prisma database GUI
 
 | Area | Status |
 |---|---|
-| Authentication (login, register, onboarding) | Done |
-| Email verification on registration (bcrypt + Nodemailer) | Done |
-| Password hashing upgraded SHA-256 → bcrypt | Done |
-| Dashboard layout and navigation | Done |
-| Guest management (list, add, edit, CSV import/export) | Done |
-| RSVP flow (invite codes, meal choice, plus-ones) | Done |
-| Seating chart (visual shapes, seat indicators, sketch upload, drag & drop) | Done |
-| Budget tracker (categories, venue calculator, totals) | Done |
-| Budget forecast (multi-scenario comparison) | Done |
-| Vendor management | Done |
-| Documents (upload, categorize, delete) | Done |
-| To-Do list (todo / in-progress / done) | Done |
-| Gallery (upload, approve, public toggle) | Done |
-| Message templates (SMS/Email/WhatsApp) | Done |
-| Settings (wedding details, locale, theme) | Done |
-| Public pages (home, story, details, FAQ, contact, registry) | Done |
-| Guest portal | Done |
-| Full Hebrew/English i18n with RTL support | Done |
-| AWS S3 image storage (with local fallback) | Done |
-| Role-based access control | Done |
+| Authentication (login, register, onboarding) | ✅ Done |
+| Email verification on registration (bcrypt + Nodemailer) | ✅ Done |
+| Dashboard layout and navigation | ✅ Done |
+| Guest management (list, add, CSV import/export, RSVP tracking) | ✅ Done |
+| Guest categories / sides (groom's family, bride's friends, etc.) | ✅ Done |
+| Guest type: Individual vs. Family/Group | ✅ Done |
+| Import guest from phone contacts (Android native picker) | ✅ Done |
+| RSVP flow (invite codes, meal choice, plus-ones) | ✅ Done |
+| Seating chart (visual shapes, seat indicators, sketch upload, drag & drop) | ✅ Done |
+| Budget tracker — fully editable rows (estimated, actual, deposit, paid, notes) | ✅ Done |
+| Budget remaining balance column with color coding | ✅ Done |
+| Budget forecast (multi-scenario comparison boards) | ✅ Done |
+| Copy forecast scenario to main Budget tab | ✅ Done |
+| Wedding-day schedule / timeline | ✅ Done |
+| Gift & envelope tracking with summary stats and CSV export | ✅ Done |
+| Vendor management | ✅ Done |
+| Documents (upload, categorize, delete) | ✅ Done |
+| To-Do list (todo / in-progress / done) | ✅ Done |
+| Gallery (upload, approve, public toggle) | ✅ Done |
+| Message templates (SMS/Email/WhatsApp) | ✅ Done |
+| AI Planner (Claude, streaming, live wedding context) | ✅ Done |
+| Settings (wedding details, locale, theme) | ✅ Done |
+| Public pages (home, story, details, FAQ, contact, registry) | ✅ Done |
+| Guest portal | ✅ Done |
+| Full Hebrew/English i18n with RTL support | ✅ Done |
+| AWS S3 image storage (with local fallback) | ✅ Done |
+| Role-based access control | ✅ Done |

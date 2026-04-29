@@ -229,6 +229,9 @@
     "installments": "תשלומים",
     "budgetItemAdded": "!פריט התקציב נוסף בהצלחה",
     "addBudgetError": "הוספת פריט התקציב נכשלה. נא לנסות שוב.",
+    "editBudgetItem": "עריכת פריט תקציב",
+    "saveChanges": "שמור שינויים",
+    "dueDate": "תאריך תשלום",
     "totalDeposits": "סה\"כ מקדמות",
     "amountPaid": "סכום ששולם",
     "remainingBalance": "יתרה לתשלום",
@@ -418,7 +421,12 @@
     "fPresetGardenVenue": "גן ירוק",
     "fPresetCityHall": "אולם עירוני",
     "fPreset250Guests": "250 אורחים",
-    "fPresetWinter": "חתונת חורף"
+    "fPresetWinter": "חתונת חורף",
+    "fUseAsBudget": "השתמש כתקציב אמיתי",
+    "fUseAsBudgetConfirmTitle": "העתק לטאב תקציב?",
+    "fUseAsBudgetConfirmDesc": "פעולה זו תוסיף את כל הפריטים מ\"{name}\" כעלויות משוערות בטאב התקציב הראשי. תוכל לערוך או למחוק אותם שם לאחר מכן.",
+    "fUseAsBudgetConfirm": "העתק לתקציב",
+    "fUseAsBudgetSuccess": "הועתק לטאב תקציב!"
   },
   "guest": {
     "title": "פורטל אורח",

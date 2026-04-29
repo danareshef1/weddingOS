@@ -32,7 +32,8 @@ export async function updateBudgetItem(id: string, data: Partial<BudgetItemInput
     where: { id, weddingId: session.user.weddingId },
     data: {
       ...data,
-      dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+      dueDate: data.dueDate ? new Date(data.dueDate) : data.dueDate === '' ? null : undefined,
+      notes: data.notes ?? undefined,
     },
   });
 

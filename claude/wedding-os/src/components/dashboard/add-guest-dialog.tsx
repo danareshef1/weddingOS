@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { UserPlus, Users, User, Loader2, Minus, Plus, BookUser, Upload } from 'lucide-react';
+import { UserPlus, Users, User, Loader2, Minus, Plus, BookUser } from 'lucide-react';
 import { createGuest } from '@/actions/guests';
 import { guestSchema } from '@/lib/validations';
 import {
@@ -38,32 +38,6 @@ function parseContactName(fullName: string): { firstName: string; lastName: stri
   const parts = fullName.trim().split(/\s+/);
   if (parts.length === 1) return { firstName: parts[0], lastName: '' };
   return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
-}
-
-// Parse a vCard string (exported from Apple Contacts, Google, etc.)
-function parseVCard(vcf: string): { firstName: string; lastName: string; phone: string } {
-  const lines = vcf.replace(/\r\n|\r/g, '\n').split('\n');
-  let firstName = '';
-  let lastName = '';
-  let phone = '';
-
-  for (const line of lines) {
-    if (line.startsWith('FN:') && !firstName && !lastName) {
-      const { firstName: fn, lastName: ln } = parseContactName(line.slice(3).trim());
-      firstName = fn;
-      lastName = ln;
-    } else if (line.startsWith('N:') && (!firstName || !lastName)) {
-      // N:LastName;FirstName;Middle;Prefix;Suffix
-      const parts = line.slice(2).split(';');
-      if (!lastName && parts[0]) lastName = parts[0].trim();
-      if (!firstName && parts[1]) firstName = parts[1].trim();
-    } else if (line.startsWith('TEL') && !phone) {
-      const colon = line.indexOf(':');
-      if (colon !== -1) phone = line.slice(colon + 1).trim();
-    }
-  }
-
-  return { firstName, lastName, phone };
 }
 
 // ─── Category options ─────────────────────────────────────────────────────────
@@ -140,20 +114,10 @@ export function AddGuestDialog() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
 
-  const vcfInputRef = useRef<HTMLInputElement>(null);
   const [contactsSupported, setContactsSupported] = useState(false);
   useEffect(() => {
     setContactsSupported(typeof navigator !== 'undefined' && 'contacts' in navigator);
   }, []);
-
-  function applyContact(firstName: string, lastName: string, phone: string) {
-    if (guestType === 'INDIVIDUAL') {
-      setIndividual((prev) => ({ ...prev, firstName, lastName, phone }));
-    } else {
-      setFamily((prev) => ({ ...prev, familyName: lastName || firstName, phone }));
-    }
-    setContactFilled(true);
-  }
 
   async function handlePickContact() {
     if (!navigator.contacts) return;
@@ -166,26 +130,17 @@ export function AddGuestDialog() {
       const fullName = contact.name?.[0] ?? '';
       const phone = contact.tel?.[0] ?? '';
       const { firstName, lastName } = parseContactName(fullName);
-      applyContact(firstName, lastName, phone);
+      if (guestType === 'INDIVIDUAL') {
+        setIndividual((prev) => ({ ...prev, firstName, lastName, phone }));
+      } else {
+        setFamily((prev) => ({ ...prev, familyName: lastName || firstName, phone }));
+      }
+      setContactFilled(true);
     } catch {
       // User cancelled or permission denied — do nothing
     } finally {
       setPickingContact(false);
     }
-  }
-
-  function handleVCardFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = ev.target?.result as string;
-      const { firstName, lastName, phone } = parseVCard(text);
-      applyContact(firstName, lastName, phone);
-    };
-    reader.readAsText(file);
-    // Reset input so the same file can be re-selected if needed
-    e.target.value = '';
   }
 
   function updateIndividual(k: keyof typeof initialIndividual, v: string | number) {
@@ -308,46 +263,26 @@ export function AddGuestDialog() {
           })}
         </div>
 
-        {/* Contact import — vCard works on all platforms; native picker on Android */}
-        <div className="space-y-2">
-          <div className={cn('grid gap-2', contactsSupported ? 'grid-cols-2' : 'grid-cols-1')}>
-            {/* vCard file import — macOS, Windows, any browser */}
-            <button
+        {/* Contact picker — only shown on supporting devices */}
+        {contactsSupported && (
+          <div className="space-y-1.5">
+            <Button
               type="button"
-              onClick={() => vcfInputRef.current?.click()}
-              className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 px-3 py-2.5 text-sm text-gray-600 transition-colors hover:border-rose-300 hover:bg-rose-50/40 hover:text-rose-600"
+              variant="outline"
+              className="w-full gap-2 border-dashed"
+              onClick={handlePickContact}
+              disabled={pickingContact}
             >
-              <Upload className="h-4 w-4 shrink-0" />
-              {t('importVcf')}
-            </button>
-            <input
-              ref={vcfInputRef}
-              type="file"
-              accept=".vcf,text/vcard"
-              className="hidden"
-              onChange={handleVCardFile}
-            />
-
-            {/* Native contact picker — Android Chrome only */}
-            {contactsSupported && (
-              <button
-                type="button"
-                onClick={handlePickContact}
-                disabled={pickingContact}
-                className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 px-3 py-2.5 text-sm text-gray-600 transition-colors hover:border-rose-300 hover:bg-rose-50/40 hover:text-rose-600 disabled:opacity-50"
-              >
-                {pickingContact
-                  ? <Loader2 className="h-4 w-4 animate-spin" />
-                  : <BookUser className="h-4 w-4 shrink-0" />}
-                {t('importFromContacts')}
-              </button>
+              {pickingContact
+                ? <Loader2 className="h-4 w-4 animate-spin" />
+                : <BookUser className="h-4 w-4 text-rose-500" />}
+              {t('importFromContacts')}
+            </Button>
+            {contactFilled && (
+              <p className="text-center text-xs text-emerald-600">{t('contactsFilled')}</p>
             )}
           </div>
-
-          {contactFilled && (
-            <p className="text-center text-xs text-emerald-600">{t('contactsFilled')}</p>
-          )}
-        </div>
+        )}
 
         <motion.form
           key={guestType}
